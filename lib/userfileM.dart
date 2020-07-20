@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
+import 'package:freelancer/config.dart';
 import 'package:freelancer/login.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -30,7 +31,7 @@ class FormUserM extends StatefulWidget {
 
 class _FormUserM extends State<FormUserM> {
   _updateResume() async {
-    var apiUrl = "http://10.0.2.2:8080/alter_resume";
+    var apiUrl = "${baseUrl}alter_resume";
     var result = await http.post(apiUrl, body: {
       "user_id": "$_userid",
       "name": "$_name",

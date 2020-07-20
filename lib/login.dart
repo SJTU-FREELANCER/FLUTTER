@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:freelancer/config.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -8,6 +9,8 @@ import 'package:freelancer/register.dart';
 int userID;
 String username;
 String realname;
+
+int personstatus;
 
 void main() {
   runApp(FlLogin());
@@ -37,13 +40,14 @@ class _LoginBodyState extends State<LoginBody> {
   String _password;
   bool _flag = false;
   _getValidation() async {
-    var apiUrl = "http://10.0.2.2:8080/login?";
+    var apiUrl = "${baseUrl}login?";
     var result = await http.post(apiUrl,
         body: {"username": "$_username", "password": "$_password"});
     if (result.statusCode == 200) {
       print(json.decode(result.body) is Map);
       Map tmp = json.decode(result.body);
       print(tmp["status"]);
+      personstatus = tmp["status"];
       if (tmp["status"] == 2 || tmp["status"] == 1) {
         print("login success");
         _flag = true;
