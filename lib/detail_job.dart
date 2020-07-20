@@ -1,8 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/mainpage.dart';
 
+var _recedu;
+var _recexp;
+var _recdes;
+
 class Jobdetail extends StatefulWidget {
-  Jobdetail({Key key}) : super(key: key);
+  var recedu;
+  var recexp;
+  var recdes;
+  Jobdetail(
+      {Key key,
+      @required this.recedu,
+      @required this.recexp,
+      @required this.recdes})
+      : super(key: key);
 
   @override
   _JobdetailState createState() => _JobdetailState();
@@ -190,8 +202,7 @@ class JobDescription extends StatefulWidget {
 }
 
 class _JobDescriptionState extends State<JobDescription> {
-  String _description =
-      "主要负责饮品制作，前台登记收银。服务生上班时间白板晚班可以根据自己的时间协调。要求：18-29周岁均可，服从管理有上进心，在校及社会人士均可。";
+  String _description;
   @override
   Widget build(BuildContext context) {
     return Card(

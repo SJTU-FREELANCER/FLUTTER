@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freelancer/create_applicants.dart';
 import 'package:freelancer/create_jobs.dart';
 import 'package:freelancer/login.dart';
+import 'package:freelancer/managepage.dart';
 import 'package:freelancer/myapplicants.dart';
 import 'package:freelancer/mylike.dart';
 import 'package:freelancer/myrecruit.dart';
@@ -141,6 +142,85 @@ class MyDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> drawerlist = <Widget>[
+      ListTile(
+        leading: const Icon(
+          Icons.face,
+          color: Colors.pink,
+        ),
+        title: const Text('用户信息'),
+        onTap: () {
+          runApp(FlFile());
+        },
+      ),
+      ListTile(
+        leading: const Icon(
+          Icons.folder_shared,
+          color: Colors.deepOrange,
+        ),
+        title: const Text('简历资料'),
+        onTap: () {
+          runApp(FlFileM());
+        },
+      ),
+      ListTile(
+        leading: const Icon(
+          Icons.star,
+          color: Colors.yellow,
+        ),
+        title: const Text('我的收藏'),
+        onTap: () {
+          runApp(Mylikes());
+        },
+      ),
+      ListTile(
+        leading: const Icon(
+          Icons.swap_horizontal_circle,
+          color: Colors.blue,
+        ),
+        title: const Text('我的招聘'),
+        onTap: () {
+          runApp(FlMyRecruit());
+        },
+      ),
+      ListTile(
+        leading: const Icon(
+          Icons.dock,
+          color: Colors.indigo,
+        ),
+        title: const Text('我的应聘'),
+        onTap: () {
+          runApp(FlMyApplicants());
+        },
+      ),
+      ListTile(
+        leading: const Icon(
+          Icons.undo,
+          color: Colors.green,
+        ),
+        title: const Text('退出登录'),
+        onTap: () {
+          runApp(FlLogin());
+        },
+      ),
+    ];
+    if (personstatus == 2) {
+      drawerlist.add(ListTile(
+        leading: const Icon(
+          Icons.gps_fixed,
+          color: Colors.purple,
+        ),
+        title: const Text('管理员工具'),
+        onTap: () {
+          if (personstatus == 2) {
+            runApp(Flmanage());
+          } else {
+            print("$personstatus");
+            runApp(FlMainpage());
+          }
+        },
+      ));
+    }
     return Drawer(
       child: MediaQuery.removePadding(
         context: context,
@@ -171,68 +251,7 @@ class MyDrawer extends StatelessWidget {
             ),
             Expanded(
               child: ListView(
-                children: <Widget>[
-                  ListTile(
-                    leading: const Icon(
-                      Icons.face,
-                      color: Colors.pink,
-                    ),
-                    title: const Text('用户信息'),
-                    onTap: () {
-                      runApp(FlFile());
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.folder_shared,
-                      color: Colors.deepOrange,
-                    ),
-                    title: const Text('简历资料'),
-                    onTap: () {
-                      runApp(FlFileM());
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.star,
-                      color: Colors.yellow,
-                    ),
-                    title: const Text('我的收藏'),
-                    onTap: () {
-                      runApp(Mylikes());
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.swap_horizontal_circle,
-                      color: Colors.blue,
-                    ),
-                    title: const Text('我的招聘'),
-                    onTap: () {
-                      runApp(FlMyRecruit());
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.dock,
-                      color: Colors.indigo,
-                    ),
-                    title: const Text('我的应聘'),
-                    onTap: () {
-                      runApp(FlMyApplicants());
-                    },
-                  ),
-                  ListTile(
-                    leading: const Icon(
-                      Icons.undo,
-                      color: Colors.green,
-                    ),
-                    title: const Text('退出登录'),
-                    onTap: () {
-                      runApp(FlLogin());
-                    },
-                  ),
-                ],
+                children: drawerlist,
               ),
             ),
           ],

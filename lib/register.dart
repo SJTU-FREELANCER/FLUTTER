@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/config.dart';
 import 'package:freelancer/login.dart';
 
 import 'dart:convert';
@@ -29,11 +30,11 @@ class _RegisterBodyState extends State<RegisterBody> {
   String _email;
   String _phone;
   _sendReinfo() async {
-    var apiUrl = "http://10.0.2.2:8080/register?";
+    var apiUrl = "${baseUrl}register?";
     var result = await http.post(apiUrl, body: {
       "username": "$_username",
       "password": "$_password",
-      "address": "$_phone",
+      "phone": "$_phone",
       "email": "$_email"
     });
     if (result.statusCode == 200) {
