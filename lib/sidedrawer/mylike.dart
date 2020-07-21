@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:freelancer/mainpage.dart';
+import 'package:freelancer/Homepage/mainpage.dart';
 
-class Appdetail extends StatelessWidget {
+class Mylikes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -9,16 +9,16 @@ class Appdetail extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(
           title: Text(
-            "Applicants detail",
+            "Create a job",
           ),
         ),
-        body: AppdetailBody(),
+        body: MylikesBody(),
       ),
     );
   }
 }
 
-class AppdetailBody extends StatelessWidget {
+class MylikesBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -42,7 +42,7 @@ class AppdetailBody extends StatelessWidget {
                     bottom: 30,
                   ),
                   child: Text(
-                    "求职标题",
+                    "个人收藏中心",
                     style: TextStyle(
                       fontSize: 32,
                     ),
@@ -51,7 +51,7 @@ class AppdetailBody extends StatelessWidget {
               ],
             ),
           ),
-          Text("this is for 求职者细节"),
+          Text("this is for 个人收藏选择"),
         ],
       ),
     );

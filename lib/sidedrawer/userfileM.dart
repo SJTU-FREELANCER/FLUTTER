@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
 import 'package:freelancer/config.dart';
-import 'package:freelancer/login.dart';
+import 'package:freelancer/startup/login.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-import 'mainpage.dart';
+import '../Homepage/mainpage.dart';
 
 int _userid = userID;
 String _name;

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:freelancer/login.dart';
-import 'package:freelancer/mainpage.dart';
-import 'package:freelancer/register.dart';
+import 'package:freelancer/startup/login.dart';
+import 'package:freelancer/Homepage/mainpage.dart';
+import 'package:freelancer/startup/register.dart';
 
 void main() {
-  runApp(FlMainpage());
+  runApp(FlLogin());
 }
 
 class MyApp extends StatelessWidget {
