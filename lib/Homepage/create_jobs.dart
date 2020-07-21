@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:freelancer/mainpage.dart';
+import 'package:freelancer/Homepage/mainpage.dart';
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class Createapplicants extends StatelessWidget {
+class Createjobs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return MaterialApp(
       home: Scaffold(
-        body: CreateapplicantsBody(),
+        body: Createjobshome(),
       ),
     );
   }
 }
 
-class CreateapplicantsBody extends StatefulWidget {
-  CreateapplicantsBody({Key key}) : super(key: key);
+class Createjobshome extends StatefulWidget {
+  Createjobshome({Key key}) : super(key: key);
 
   @override
-  _CreateapplicantsBodyState createState() => _CreateapplicantsBodyState();
+  _CreatejobshomeState createState() => _CreatejobshomeState();
 }
 
-class _CreateapplicantsBodyState extends State<CreateapplicantsBody> {
+class _CreatejobshomeState extends State<Createjobshome> {
   String _username;
   String _password;
   String _email;
@@ -67,7 +67,7 @@ class _CreateapplicantsBodyState extends State<CreateapplicantsBody> {
                     bottom: 30,
                   ),
                   child: Text(
-                    "求职申请",
+                    "发布招聘",
                     style: TextStyle(
                       fontSize: 32,
                     ),
@@ -77,8 +77,8 @@ class _CreateapplicantsBodyState extends State<CreateapplicantsBody> {
             ),
             TextField(
               decoration: InputDecoration(
-                labelText: "请输入学历",
-                prefixIcon: Icon(Icons.school),
+                labelText: "Cate（请输入工种）",
+                prefixIcon: Icon(Icons.category),
                 // 未获得焦点下划线设为灰色
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
@@ -94,8 +94,8 @@ class _CreateapplicantsBodyState extends State<CreateapplicantsBody> {
             ),
             TextField(
               decoration: InputDecoration(
-                labelText: "请输入经验",
-                prefixIcon: Icon(Icons.settings_applications),
+                labelText: "请输入标题（简洁明了）",
+                prefixIcon: Icon(Icons.title),
                 // 未获得焦点下划线设为灰色
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
@@ -111,8 +111,8 @@ class _CreateapplicantsBodyState extends State<CreateapplicantsBody> {
             ),
             TextField(
               decoration: InputDecoration(
-                labelText: "请输入真实姓名",
-                prefixIcon: Icon(Icons.person_pin),
+                labelText: "请输入薪资",
+                prefixIcon: Icon(Icons.card_giftcard),
                 // 未获得焦点下划线设为灰色
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
@@ -128,8 +128,25 @@ class _CreateapplicantsBodyState extends State<CreateapplicantsBody> {
             ),
             TextField(
               decoration: InputDecoration(
-                labelText: "请输入生日",
-                prefixIcon: Icon(Icons.present_to_all),
+                labelText: "请输入位置",
+                prefixIcon: Icon(Icons.location_city),
+                // 未获得焦点下划线设为灰色
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                //获得焦点下划线设为蓝色
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+              ),
+              onChanged: (value) {
+                _email = value;
+              },
+            ),
+            TextField(
+              decoration: InputDecoration(
+                labelText: "请输入职位描述",
+                prefixIcon: Icon(Icons.details),
                 // 未获得焦点下划线设为灰色
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
@@ -148,7 +165,7 @@ class _CreateapplicantsBodyState extends State<CreateapplicantsBody> {
               child: RaisedButton.icon(
                 icon: Icon(Icons.done_all),
                 label: Text(
-                  "同意工作协议并发布",
+                  "同意招聘协议并发布",
                   style: TextStyle(
                     fontSize: 10.0,
                   ),

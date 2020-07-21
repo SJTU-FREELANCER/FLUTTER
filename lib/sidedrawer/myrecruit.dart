@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'mainpage.dart';
+import '../Homepage/mainpage.dart';
 
-class FlMyApplicants extends StatelessWidget {
+class FlMyRecruit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -52,7 +52,7 @@ class _FormTestRouteState extends State<FormTestRoute> {
                         bottom: 30,
                       ),
                       child: Text(
-                        "求职信息",
+                        "招聘信息",
                         style: TextStyle(
                           fontSize: 32,
                         ),

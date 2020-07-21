@@ -3,8 +3,8 @@ import 'package:freelancer/config.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
-import 'package:freelancer/mainpage.dart';
-import 'package:freelancer/register.dart';
+import 'package:freelancer/Homepage/mainpage.dart';
+import 'package:freelancer/startup/register.dart';
 
 int userID;
 String username;

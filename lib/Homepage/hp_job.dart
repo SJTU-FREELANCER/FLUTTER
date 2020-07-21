@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
-import 'config.dart';
-import 'package:freelancer/detail_job.dart'; //每个新建的都要引入
+import '../config.dart';
+import 'package:freelancer/Homepage/detail_job.dart'; //每个新建的都要引入
 
 var _refreshi = -20;
 var currecID;
@@ -57,6 +57,8 @@ class _JobsState extends State<Jobs> {
         var title = index["rec_Title"];
         var cate = index["rec_Cate"];
         var enrolled = index["rec_Enrolled"];
+        var education = index["education"];
+        var experience = index["experience"];
         list.add(
           Card(
             margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
@@ -146,14 +148,14 @@ class _JobsState extends State<Jobs> {
                         bottom: 5,
                       ),
                       child: Text(
-                        "一点点总部",
+                        "$education",
                         style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                     ),
                     Padding(
                       padding: EdgeInsets.only(left: 250),
                       child: Text(
-                        "29分钟前",
+                        "$experience",
                         style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                     ),

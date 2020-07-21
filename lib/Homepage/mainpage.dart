@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:freelancer/create_applicants.dart';
-import 'package:freelancer/create_jobs.dart';
-import 'package:freelancer/login.dart';
-import 'package:freelancer/managepage.dart';
-import 'package:freelancer/myapplicants.dart';
-import 'package:freelancer/mylike.dart';
-import 'package:freelancer/myrecruit.dart';
-import 'package:freelancer/tool_radio_a.dart';
-import 'package:freelancer/userfile.dart';
-import 'package:freelancer/userfileM.dart';
-import 'package:freelancer/hp_job.dart';
-import 'package:freelancer/hp_app.dart';
+import 'package:freelancer/Homepage/create_applicants.dart';
+import 'package:freelancer/Homepage/create_jobs.dart';
+import 'package:freelancer/startup/login.dart';
+import 'package:freelancer/sidedrawer/managepage.dart';
+import 'package:freelancer/sidedrawer/myapplicants.dart';
+import 'package:freelancer/sidedrawer/mylike.dart';
+import 'package:freelancer/sidedrawer/myrecruit.dart';
+import 'package:freelancer/sidedrawer/userfile.dart';
+import 'package:freelancer/sidedrawer/userfileM.dart';
+import 'package:freelancer/Homepage/hp_job.dart';
+import 'package:freelancer/Homepage/hp_app.dart';
 
 class FlMainpage extends StatelessWidget {
   @override

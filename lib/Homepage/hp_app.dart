@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:freelancer/config.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:freelancer/detail_job.dart'; //每个新建的都要引入
+import 'package:freelancer/Homepage/detail_job.dart'; //每个新建的都要引入
 
 var _refreshi = -20;
 

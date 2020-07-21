@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
 
-import 'mainpage.dart';
+import '../Homepage/mainpage.dart';
 
-class FlMyRecruit extends StatelessWidget {
+class FlFile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return MaterialApp(
-      home: FormTestRoute(),
+      home: FormUserfile(),
     );
   }
 }
 
-class FormTestRoute extends StatefulWidget {
+class FormUserfile extends StatefulWidget {
   @override
-  _FormTestRouteState createState() => new _FormTestRouteState();
+  _FormUserfile createState() => new _FormUserfile();
 }
 
-class _FormTestRouteState extends State<FormTestRoute> {
+class _FormUserfile extends State<FormUserfile> {
   TextEditingController _unameController = new TextEditingController();
   TextEditingController _pwdController = new TextEditingController();
   TextEditingController _phoneController = new TextEditingController();
@@ -52,7 +52,7 @@ class _FormTestRouteState extends State<FormTestRoute> {
                         bottom: 30,
                       ),
                       child: Text(
-                        "招聘信息",
+                        "个人信息",
                         style: TextStyle(
                           fontSize: 32,
                         ),

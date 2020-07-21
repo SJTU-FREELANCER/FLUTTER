@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:freelancer/mainpage.dart';
+import 'package:freelancer/Homepage/hp_job.dart';
+import 'package:freelancer/startup/login.dart';
+import 'package:freelancer/Homepage/mainpage.dart';
 
 var _recedu;
 var _recexp;
@@ -34,7 +36,7 @@ class _JobdetailState extends State<Jobdetail> {
                 IconButton(
                   icon: Icon(Icons.keyboard_arrow_left),
                   onPressed: () {
-                    runApp(FlMainpage());
+                    runApp(FlLogin());
                   },
                 ),
                 Padding(
@@ -43,7 +45,7 @@ class _JobdetailState extends State<Jobdetail> {
                     bottom: 30,
                   ),
                   child: Text(
-                    "工作详情",
+                    "hello",
                     style: TextStyle(
                       fontSize: 25,
                     ),

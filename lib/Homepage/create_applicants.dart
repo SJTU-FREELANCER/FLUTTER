@@ -1,36 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:freelancer/config.dart';
-import 'package:freelancer/login.dart';
+import 'package:freelancer/Homepage/mainpage.dart';
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class FlRegister extends StatelessWidget {
+class Createapplicants extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return MaterialApp(
       home: Scaffold(
-        body: RegisterBody(),
+        body: CreateapplicantsBody(),
       ),
     );
   }
 }
 
-class RegisterBody extends StatefulWidget {
-  RegisterBody({Key key}) : super(key: key);
+class CreateapplicantsBody extends StatefulWidget {
+  CreateapplicantsBody({Key key}) : super(key: key);
 
   @override
-  _RegisterBodyState createState() => _RegisterBodyState();
+  _CreateapplicantsBodyState createState() => _CreateapplicantsBodyState();
 }
 
-class _RegisterBodyState extends State<RegisterBody> {
+class _CreateapplicantsBodyState extends State<CreateapplicantsBody> {
   String _username;
   String _password;
   String _email;
   String _phone;
   _sendReinfo() async {
-    var apiUrl = "${baseUrl}register?";
+    var apiUrl = "http://10.0.2.2:8080/register?";
     var result = await http.post(apiUrl, body: {
       "username": "$_username",
       "password": "$_password",
@@ -59,7 +58,7 @@ class _RegisterBodyState extends State<RegisterBody> {
                 IconButton(
                   icon: Icon(Icons.keyboard_arrow_left),
                   onPressed: () {
-                    runApp(FlLogin());
+                    runApp(FlMainpage());
                   },
                 ),
                 Padding(
@@ -68,7 +67,7 @@ class _RegisterBodyState extends State<RegisterBody> {
                     bottom: 30,
                   ),
                   child: Text(
-                    "注册",
+                    "求职申请",
                     style: TextStyle(
                       fontSize: 32,
                     ),
@@ -78,8 +77,8 @@ class _RegisterBodyState extends State<RegisterBody> {
             ),
             TextField(
               decoration: InputDecoration(
-                labelText: "请输入用户名",
-                prefixIcon: Icon(Icons.person),
+                labelText: "请输入学历",
+                prefixIcon: Icon(Icons.school),
                 // 未获得焦点下划线设为灰色
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
@@ -95,8 +94,8 @@ class _RegisterBodyState extends State<RegisterBody> {
             ),
             TextField(
               decoration: InputDecoration(
-                labelText: "请输入密码",
-                prefixIcon: Icon(Icons.lock),
+                labelText: "请输入经验",
+                prefixIcon: Icon(Icons.settings_applications),
                 // 未获得焦点下划线设为灰色
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
@@ -112,8 +111,8 @@ class _RegisterBodyState extends State<RegisterBody> {
             ),
             TextField(
               decoration: InputDecoration(
-                labelText: "请输入手机号码",
-                prefixIcon: Icon(Icons.phone),
+                labelText: "请输入真实姓名",
+                prefixIcon: Icon(Icons.person_pin),
                 // 未获得焦点下划线设为灰色
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
@@ -129,8 +128,8 @@ class _RegisterBodyState extends State<RegisterBody> {
             ),
             TextField(
               decoration: InputDecoration(
-                labelText: "请输入邮箱",
-                prefixIcon: Icon(Icons.mail),
+                labelText: "请输入生日",
+                prefixIcon: Icon(Icons.present_to_all),
                 // 未获得焦点下划线设为灰色
                 enabledBorder: UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
@@ -149,21 +148,21 @@ class _RegisterBodyState extends State<RegisterBody> {
               child: RaisedButton.icon(
                 icon: Icon(Icons.done_all),
                 label: Text(
-                  "同意协议并注册",
+                  "同意工作协议并发布",
                   style: TextStyle(
                     fontSize: 10.0,
                   ),
                 ),
                 onPressed: () {
                   _sendReinfo();
-                  runApp(FlLogin());
+                  runApp(FlMainpage());
                 },
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(top: 50),
+              padding: EdgeInsets.only(left: 150, top: 50),
               child: Text(
-                "请仔细阅读《用户手册》和《隐私设置》",
+                "请仔细阅读《工作协议》和《招聘协议》",
                 style: TextStyle(
                   fontSize: 8,
                   color: Colors.indigo,
