@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:freelancer/config.dart';
+import 'package:freelancer/sharedinfo/config.dart';
 import 'package:freelancer/startup/login.dart';
 
 import 'dart:convert';

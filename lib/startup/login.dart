@@ -1,20 +1,12 @@
 import 'dart:convert';
-import 'package:freelancer/config.dart';
 import 'package:http/http.dart' as http;
+
+import 'package:freelancer/sharedinfo/config.dart';
+import 'package:freelancer/sharedinfo/user_info.dart';
 
 import 'package:flutter/material.dart';
 import 'package:freelancer/Homepage/mainpage.dart';
 import 'package:freelancer/startup/register.dart';
-
-int userID;
-String username;
-String realname;
-
-int personstatus;
-
-void main() {
-  runApp(FlLogin());
-}
 
 class FlLogin extends StatelessWidget {
   @override
@@ -44,19 +36,24 @@ class _LoginBodyState extends State<LoginBody> {
     var result = await http.post(apiUrl,
         body: {"username": "$_username", "password": "$_password"});
     if (result.statusCode == 200) {
-      print(json.decode(result.body) is Map);
       Map tmp = json.decode(result.body);
-      print(tmp["status"]);
-      personstatus = tmp["status"];
-      if (tmp["status"] == 2 || tmp["status"] == 1) {
-        print("login success");
+      userStatus = tmp["status"];
+      if (userStatus == 2 || userStatus == 1) {
         _flag = true;
-        userID = tmp["user"]["user_ID"];
-        username = tmp["user"]["userName"];
-        realname = tmp["user"]["user_Name"];
+        print("login success");
+
+        var user = tmp["user"];
+        userRole = user["role"];
+        userID = user["user_ID"];
+        userName = user["userName"];
+        userRname = user["user_Name"];
+        userEmail = user["email"];
+        userPhone = user["phone"];
+        userPassword = user["password"];
+
         print("$userID");
-        print("$username");
-        print("$realname");
+        print("$userName");
+        print("$userRname");
       }
     } else {
       print(result.statusCode);
@@ -70,7 +67,6 @@ class _LoginBodyState extends State<LoginBody> {
   @override
   void initState() {}
   Widget build(BuildContext context) {
-    // TODO: implement build
     return ListView(
       children: <Widget>[
         Container(
@@ -110,7 +106,6 @@ class _LoginBodyState extends State<LoginBody> {
           onChanged: (value) {
             setState(() {
               _username = value;
-              username = _username;
             });
           },
         ),

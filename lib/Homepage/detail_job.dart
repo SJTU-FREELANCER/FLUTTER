@@ -1,28 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:freelancer/Homepage/hp_job.dart';
-import 'package:freelancer/startup/login.dart';
-import 'package:freelancer/Homepage/mainpage.dart';
+
+var _cate;
+var _title;
+var _salary;
 
 var _recedu;
 var _recexp;
 var _recdes;
 
 class Jobdetail extends StatefulWidget {
+  var reccate;
+  var rectitle;
+  var recsalary;
+
   var recedu;
   var recexp;
   var recdes;
-  Jobdetail(
-      {Key key,
-      @required this.recedu,
-      @required this.recexp,
-      @required this.recdes})
-      : super(key: key);
+
+  Jobdetail({
+    Key key,
+    @required this.reccate,
+    @required this.rectitle,
+    @required this.recsalary,
+    @required this.recedu,
+    @required this.recexp,
+    @required this.recdes,
+  }) : super(key: key);
 
   @override
   _JobdetailState createState() => _JobdetailState();
 }
 
 class _JobdetailState extends State<Jobdetail> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    _cate = widget.reccate;
+    _title = widget.rectitle;
+    _salary = widget.recsalary;
+
+    _recdes = widget.recdes;
+    _recedu = widget.recedu;
+    _recexp = widget.recexp;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -36,7 +57,8 @@ class _JobdetailState extends State<Jobdetail> {
                 IconButton(
                   icon: Icon(Icons.keyboard_arrow_left),
                   onPressed: () {
-                    runApp(FlLogin());
+                    Navigator.pop(context);
+                    // runApp(FlMainpage());
                   },
                 ),
                 Padding(
@@ -45,7 +67,7 @@ class _JobdetailState extends State<Jobdetail> {
                     bottom: 30,
                   ),
                   child: Text(
-                    "hello",
+                    "工作详情",
                     style: TextStyle(
                       fontSize: 25,
                     ),
@@ -110,8 +132,8 @@ class _DetailsState extends State<Details> {
       child: Column(
         children: [
           ListTile(
-            title: Text("饮品店六小时薪资日结兼职"),
-            subtitle: Text("200元/天 | 日结"),
+            title: Text("$_cate|$_title"),
+            subtitle: Text("$_salary 元/月| 日结"),
           ),
           Row(
             children: [
@@ -161,7 +183,7 @@ class _DetailsState extends State<Details> {
               Padding(
                 padding: EdgeInsets.only(left: 10, top: 5),
                 child: Text(
-                  "工作时间：$_worktime",
+                  "教育要求：$_recedu",
                 ),
               ),
             ],
@@ -171,7 +193,7 @@ class _DetailsState extends State<Details> {
               Padding(
                 padding: EdgeInsets.only(left: 10, top: 5),
                 child: Text(
-                  "工作地点：$_workplace",
+                  "经验要求：$_recexp",
                 ),
               ),
             ],
@@ -204,13 +226,12 @@ class JobDescription extends StatefulWidget {
 }
 
 class _JobDescriptionState extends State<JobDescription> {
-  String _description;
   @override
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
         title: Text("职位描述"),
-        subtitle: Text("$_description"),
+        subtitle: Text("$_recdes"),
       ),
     );
   }

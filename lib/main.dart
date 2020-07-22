@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:freelancer/startup/login.dart';
-import 'package:freelancer/Homepage/mainpage.dart';
-import 'package:freelancer/startup/register.dart';
 
 void main() {
   runApp(FlLogin());
@@ -12,12 +11,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return MaterialApp(
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        supportedLocales: [
+          const Locale('zh', 'CN'),
+          const Locale('en', 'US'),
+        ],
         home: Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "that",
-        ),
-      ),
-    ));
+          appBar: AppBar(
+            title: Text(
+              "that",
+            ),
+          ),
+        ));
   }
 }

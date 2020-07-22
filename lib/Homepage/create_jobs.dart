@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freelancer/Homepage/mainpage.dart';
+import 'package:freelancer/sharedinfo/config.dart';
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -29,7 +30,7 @@ class _CreatejobshomeState extends State<Createjobshome> {
   String _email;
   String _phone;
   _sendReinfo() async {
-    var apiUrl = "http://10.0.2.2:8080/register?";
+    var apiUrl = "${baseUrl}register?";
     var result = await http.post(apiUrl, body: {
       "username": "$_username",
       "password": "$_password",
