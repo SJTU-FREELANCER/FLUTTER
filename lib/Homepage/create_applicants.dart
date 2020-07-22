@@ -155,7 +155,7 @@ class _CreateapplicantsBodyState extends State<CreateapplicantsBody> {
                 ),
                 onPressed: () {
                   _sendReinfo();
-                  runApp(FlMainpage());
+                  Navigator.of(context).pop();
                 },
               ),
             ),

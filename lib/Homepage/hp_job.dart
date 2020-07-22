@@ -1,12 +1,13 @@
 import 'dart:convert';
+import 'dart:ffi';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
-import '../config.dart';
+import '../sharedinfo/config.dart';
 import 'package:freelancer/Homepage/detail_job.dart'; //每个新建的都要引入
 
 var _refreshi = -20;
-var currecID;
 
 class Jobs extends StatefulWidget {
   Jobs({Key key}) : super(key: key);
@@ -18,47 +19,40 @@ class Jobs extends StatefulWidget {
 class _JobsState extends State<Jobs> {
   //filter info added?
   bool _needFilter = false;
-  var _fsalary;
-  var _fcate;
-  var _flocation;
-  var _ftitle;
-  var _fexp;
-  var _fedu;
+  String _fsalary;
+  String _fcate;
+  String _flocation;
+  String _ftitle;
+  String _fexp;
+  String _fedu;
+
+  var para = new Map<String, String>();
 
   //get jobs without filter info
   List<Widget> joblist = new List();
   _getCards() async {
     List<Widget> list = new List();
     var apiUrl = "${baseUrl}get_jobs";
-    var apiUrlf = "${baseUrl}filt_jobs";
     var result;
-    if (_needFilter) {
-      result = await http.post(apiUrlf, body: {
-        "salary": "$_fsalary",
-        "cate": "$_fcate",
-        "location": "$_flocation",
-        "title": "$_ftitle",
-        "exprience": "$_fexp",
-        "education": "$_fedu",
-      });
-    } else {
-      result = await http.get(apiUrl);
-    }
+
+    result = await http.get(apiUrl);
 
     Utf8Decoder decode = new Utf8Decoder();
     if (result.statusCode == 200) {
       print(jsonDecode(decode.convert(result.bodyBytes)) is List);
       List tmp = jsonDecode(decode.convert(result.bodyBytes));
       _refreshi += 20;
-      for (int i = 0 + (_refreshi % 1000); i <= (_refreshi + 20) % 1000; i++) {
+      _refreshi = _refreshi % 1000;
+
+      for (int i = 0 + _refreshi; i <= _refreshi + 20; i++) {
         var index = tmp[i];
         var salary = index["rec_salary"];
         var location = index["rec_Location"];
         var title = index["rec_Title"];
         var cate = index["rec_Cate"];
         var enrolled = index["rec_Enrolled"];
-        var education = index["education"];
-        var experience = index["experience"];
+        var education = index["rec_Education"];
+        var experience = index["rec_Experience"];
         list.add(
           Card(
             margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
@@ -67,7 +61,7 @@ class _JobsState extends State<Jobs> {
               children: [
                 ListTile(
                   title: Text("$cate|$title"),
-                  subtitle: Text("$salary"),
+                  subtitle: Text("$salary 元/月"),
                   trailing: Column(
                     children: [
                       Container(
@@ -89,7 +83,7 @@ class _JobsState extends State<Jobs> {
                           child: Text("申请",
                               style:
                                   TextStyle(fontSize: 12, color: Colors.white)),
-                          onPressed: () {},
+                          onPressed: _addApplyInfo,
                         ),
                       ),
                     ],
@@ -123,12 +117,14 @@ class _JobsState extends State<Jobs> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => new Jobdetail(
+                                reccate: index["rec_Cate"],
+                                rectitle: index["rec_Title"],
+                                recsalary: index["rec_salary"],
                                 recedu: index["rec_Education"],
                                 recexp: index["rec_Experience"],
                                 recdes: index["rec_Desc"],
                               ),
                             ));
-                        // runApp(Jobdetail());
                       },
                     ),
                   ),
@@ -148,14 +144,14 @@ class _JobsState extends State<Jobs> {
                         bottom: 5,
                       ),
                       child: Text(
-                        "$education",
+                        "教育：$education",
                         style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.only(left: 250),
+                      padding: EdgeInsets.only(left: 230),
                       child: Text(
-                        "$experience",
+                        "经验：$experience",
                         style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                     ),
@@ -174,6 +170,155 @@ class _JobsState extends State<Jobs> {
       print(result.statusCode);
     }
   }
+
+  _filteredCards() async {
+    print("get here start");
+    List<Widget> list = new List();
+
+    //var apiUrlf = "${baseUrl}filt_jobs";
+    var fresult;
+
+    var uri = Uri.http("10.0.2.2:8080", "/filt_jobs", para);
+
+    fresult = await http.get(uri);
+
+    Utf8Decoder decode = new Utf8Decoder();
+    if (fresult.statusCode == 200) {
+      print(jsonDecode(decode.convert(fresult.bodyBytes)) is List);
+      List tmp = jsonDecode(decode.convert(fresult.bodyBytes));
+
+      print(tmp.length);
+
+      for (int i = 0; i < tmp.length; i++) {
+        var index = tmp[i];
+        var salary = index["rec_salary"];
+        var location = index["rec_Location"];
+        var title = index["rec_Title"];
+        var cate = index["rec_Cate"];
+        var enrolled = index["rec_Enrolled"];
+        var education = index["rec_Education"];
+        var experience = index["rec_Experience"];
+        list.add(
+          Card(
+            margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+            elevation: 15.0,
+            child: Column(
+              children: [
+                ListTile(
+                  title: Text("$cate|$title"),
+                  subtitle: Text("$salary 元/月"),
+                  trailing: Column(
+                    children: [
+                      Container(
+                        width: 80,
+                        height: 15,
+                        child: Text(
+                          "$enrolled 人进入",
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Container(
+                        width: 80,
+                        height: 30,
+                        child: RaisedButton(
+                          color: Colors.lightGreen,
+                          child: Text("申请",
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.white)),
+                          onPressed: () {
+                            _addApplyInfo;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: 20,
+                        bottom: 3,
+                      ),
+                      child: Text(
+                        "$location",
+                        style:
+                            TextStyle(fontSize: 14, color: Colors.indigoAccent),
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 350),
+                  child: Container(
+                    width: 30,
+                    height: 30,
+                    child: IconButton(
+                      color: Colors.indigoAccent,
+                      icon: Icon(Icons.keyboard_arrow_right),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => new Jobdetail(
+                                reccate: index["rec_Cate"],
+                                rectitle: index["rec_Title"],
+                                recsalary: index["rec_salary"],
+                                recedu: index["rec_Education"],
+                                recexp: index["rec_Experience"],
+                                recdes: index["rec_Desc"],
+                              ),
+                            ));
+                      },
+                    ),
+                  ),
+                ),
+                Divider(
+                  height: 1.0,
+                  indent: 20.0,
+                  endIndent: 20,
+                  color: Colors.blueGrey,
+                ),
+                Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: 20,
+                        top: 3,
+                        bottom: 5,
+                      ),
+                      child: Text(
+                        "教育：$education",
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 230),
+                      child: Text(
+                        "经验：$experience",
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+
+      setState(() {
+        joblist = list;
+      });
+    } else {
+      print(fresult.statusCode);
+    }
+  }
+
+  _addApplyInfo() {}
 
   @override
   void initState() {
@@ -227,37 +372,24 @@ class _JobsState extends State<Jobs> {
   }
 
   void _onAdd() {
+    print("$_needFilter");
     showDialog(
         context: context,
         builder: (context) {
           return SimpleDialog(
             title: const Text('请填写筛选信息'),
             children: <Widget>[
-              // SimpleDialogOption(
-              //   onPressed: () {
-              //     // 返回1
-              //     Navigator.pop(context, 1);
-              //   },
-              //   child: Padding(
-              //     padding: const EdgeInsets.symmetric(vertical: 6),
-              //     child: const Text('找工作'),
-              //   ),
-              // ),
               TextFormField(
-                autofocus: true,
-                decoration: InputDecoration(
-                  labelText: "salary",
-                  hintText: "e.g:5000-6000",
-                  icon: Icon(Icons.person),
-                ),
-                onChanged: (value) {
-                  _fsalary = value;
-                },
-                // 校验用户名
-                // validator: (v) {
-                //   return v.trim().length > 0 ? null : "用户名不能为空";
-                // }
-              ),
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    labelText: "salary",
+                    hintText: "e.g:5000-6000",
+                    icon: Icon(Icons.person),
+                  ),
+                  onChanged: (value) {
+                    _fsalary = value;
+                    if (_fsalary != null) para["salary"] = _fsalary;
+                  }),
               TextFormField(
                 decoration: InputDecoration(
                     labelText: "cate",
@@ -265,12 +397,8 @@ class _JobsState extends State<Jobs> {
                     icon: Icon(Icons.lock)),
                 onChanged: (value) {
                   _fcate = value;
+                  if (_fcate != null) para["cate"] = _fcate;
                 },
-                obscureText: true,
-                //校验密码
-                // validator: (v) {
-                //   return v.trim().length > 5 ? null : "密码不能少于6位";
-                // }
               ),
               TextFormField(
                 decoration: InputDecoration(
@@ -278,13 +406,11 @@ class _JobsState extends State<Jobs> {
                     hintText: "e.g:徐汇",
                     icon: Icon(Icons.phone_iphone)),
                 onChanged: (value) {
-                  _flocation = value;
+                  setState(() {
+                    _flocation = value;
+                    if (_fcate != null) para["cate"] = _fcate;
+                  });
                 },
-                obscureText: true,
-                //校验手机号
-                // validator: (v) {
-                //   return v.trim().length == 11 ? null : "手机号长度有误";
-                // }
               ),
               TextFormField(
                 decoration: InputDecoration(
@@ -293,12 +419,8 @@ class _JobsState extends State<Jobs> {
                     icon: Icon(Icons.mail_outline)),
                 onChanged: (value) {
                   _ftitle = value;
+                  if (_ftitle != null) para["title"] = _ftitle;
                 },
-                obscureText: true,
-                //校验手机号
-                // validator: (v) {
-                //   return v.trim().contains("@") ? null : "请加上邮箱后缀";
-                // }
               ),
               TextFormField(
                 decoration: InputDecoration(
@@ -307,12 +429,8 @@ class _JobsState extends State<Jobs> {
                     icon: Icon(Icons.phone_iphone)),
                 onChanged: (value) {
                   _fexp = value;
+                  if (_fexp != null) para["experience"] = _fexp;
                 },
-                obscureText: true,
-                //校验手机号
-                // validator: (v) {
-                //   return v.trim().length == 11 ? null : "手机号长度有误";
-                // }
               ),
               TextFormField(
                 decoration: InputDecoration(
@@ -321,12 +439,8 @@ class _JobsState extends State<Jobs> {
                     icon: Icon(Icons.mail_outline)),
                 onChanged: (value) {
                   _fedu = value;
+                  if (_fedu != null) para["education"] = _fedu;
                 },
-                obscureText: true,
-                //校验手机号
-                // validator: (v) {
-                //   return v.trim().contains("@") ? null : "请加上邮箱后缀";
-                // }
               ),
               Container(
                 width: 40,
@@ -334,26 +448,33 @@ class _JobsState extends State<Jobs> {
                 child: RaisedButton(
                   child: Text("提交",
                       style: TextStyle(fontSize: 12, color: Colors.white)),
-                  onPressed: () => _datastate,
+                  onPressed: () {
+                    _needFilter = true;
+                    print(" set needFilter");
+                    _filteredCards();
+                    Navigator.of(context).pop();
+                  },
                 ),
               ),
-
-              // SimpleDialogOption(
-              //   onPressed: () {
-              //     // 返回2
-              //     Navigator.pop(context, 2);
-              //   },
-              //   child: Padding(
-              //     padding: const EdgeInsets.symmetric(vertical: 6),
-              //     child: const Text('找人才'),
-              //   ),
-              // ),
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                width: 40,
+                height: 40,
+                child: RaisedButton(
+                  child: Text("取消筛选",
+                      style: TextStyle(fontSize: 12, color: Colors.white)),
+                  onPressed: () {
+                    _needFilter = false;
+                    print(" reset needFilter");
+                    _getCards();
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
             ],
           );
         });
-  }
-
-  _datastate() {
-    _needFilter = true;
   }
 }

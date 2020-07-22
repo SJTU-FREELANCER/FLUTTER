@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
-import 'package:freelancer/config.dart';
+import 'package:freelancer/sharedinfo/config.dart';
+import 'package:freelancer/sharedinfo/user_info.dart';
 import 'package:freelancer/startup/login.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -65,7 +66,7 @@ class _FormUserM extends State<FormUserM> {
                 autofocus: true,
                 controller: _unameController,
                 decoration: InputDecoration(
-                    labelText: "$username",
+                    labelText: "$userName",
                     labelStyle: TextStyle(color: Colors.deepOrange[600]),
                     hintText: "修改姓名",
                     icon: Icon(

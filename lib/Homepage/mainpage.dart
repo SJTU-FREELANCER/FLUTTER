@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:freelancer/Homepage/create_applicants.dart';
 import 'package:freelancer/Homepage/create_jobs.dart';
+import 'package:freelancer/sharedinfo/user_info.dart';
 import 'package:freelancer/startup/login.dart';
 import 'package:freelancer/sidedrawer/managepage.dart';
 import 'package:freelancer/sidedrawer/myapplicants.dart';
@@ -16,6 +18,14 @@ class FlMainpage extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
     return MaterialApp(
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('zh', 'CN'),
+        const Locale('en', 'US'),
+      ],
       home: ScaffoldRoute(),
     );
   }
@@ -203,7 +213,7 @@ class MyDrawer extends StatelessWidget {
         },
       ),
     ];
-    if (personstatus == 2) {
+    if (userStatus == 2) {
       drawerlist.add(ListTile(
         leading: const Icon(
           Icons.gps_fixed,
@@ -211,10 +221,10 @@ class MyDrawer extends StatelessWidget {
         ),
         title: const Text('管理员工具'),
         onTap: () {
-          if (personstatus == 2) {
+          if (userStatus == 2) {
             runApp(Flmanage());
           } else {
-            print("$personstatus");
+            print("$userStatus");
             runApp(FlMainpage());
           }
         },
@@ -242,7 +252,7 @@ class MyDrawer extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "$username",
+                    "$userName",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   )
                 ],

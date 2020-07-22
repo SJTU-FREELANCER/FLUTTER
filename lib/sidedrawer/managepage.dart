@@ -29,33 +29,44 @@ class Managebody extends StatefulWidget {
 class _ManagebodyState extends State<Managebody> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Padding(
-        padding: EdgeInsets.only(top: 80),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            IconButton(
-              icon: Icon(Icons.keyboard_arrow_left),
-              onPressed: () {
-                runApp(FlMainpage());
-              },
-            ),
-            Padding(
-              padding: EdgeInsets.only(
-                left: 20,
-                bottom: 30,
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.only(top: 80),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              IconButton(
+                icon: Icon(Icons.keyboard_arrow_left),
+                onPressed: () {
+                  runApp(FlMainpage());
+                },
               ),
-              child: Text(
-                "管理员工具",
-                style: TextStyle(
-                  fontSize: 32,
+              Padding(
+                padding: EdgeInsets.only(
+                  left: 20,
+                  bottom: 30,
+                ),
+                child: Text(
+                  "管理员工具",
+                  style: TextStyle(
+                    fontSize: 32,
+                  ),
                 ),
               ),
-            ),
-          ],
+              Container(
+                height: 485,
+                width: 400,
+                child: ListView(children: [
+                  RaisedButton(
+                    onPressed: () {},
+                  ),
+                ]),
+              ),
+            ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }
