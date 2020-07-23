@@ -38,7 +38,7 @@ class _LoginBodyState extends State<LoginBody> {
     if (result.statusCode == 200) {
       Map tmp = json.decode(result.body);
       userStatus = tmp["status"];
-      if (userStatus == 2 || userStatus == 1) {
+      if ((userStatus == 2 || userStatus == 1) && userRole != 2) {
         _flag = true;
         print("login success");
 
