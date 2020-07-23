@@ -15,6 +15,12 @@ String _birth;
 String _experience;
 String _education;
 
+bool oriGender;
+var ogender;
+var oriBirth;
+var oriEducation;
+var oriExperience;
+
 class FlFileM extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -31,6 +37,27 @@ class FormUserM extends StatefulWidget {
 }
 
 class _FormUserM extends State<FormUserM> {
+  _getResume() async {
+    var apiUrl = "${baseUrl}getResumebyId";
+    var result = await http.post(apiUrl, body: {
+      "user_id": userID.toString(),
+    });
+    if (result.statusCode == 200) {
+      print("success");
+      Utf8Decoder decode = new Utf8Decoder();
+      print(jsonDecode(decode.convert(result.bodyBytes)) is List);
+      List tmp = jsonDecode(decode.convert(result.bodyBytes));
+      var index = tmp[0];
+      oriGender = index["gender"];
+      ogender = oriGender ? "男" : "女";
+      oriBirth = index["birth"];
+      oriEducation = index["education"];
+      oriExperience = index["experience"];
+    } else {
+      print(result.statusCode);
+    }
+  }
+
   _updateResume() async {
     var apiUrl = "${baseUrl}alter_resume";
     var result = await http.post(apiUrl, body: {
@@ -52,6 +79,11 @@ class _FormUserM extends State<FormUserM> {
   GlobalKey _formKey = new GlobalKey<FormState>();
 
   @override
+  void initState() {
+    super.initState();
+    _getResume();
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
@@ -87,15 +119,19 @@ class _FormUserM extends State<FormUserM> {
               Container(
                 child: SexM(),
               ),
+              Text("$ogender"),
               Container(
                 child: Birthdate(),
               ),
+              Text("$oriBirth"),
               Container(
                 child: EducationM(),
               ),
+              Text("$oriEducation"),
               Container(
                 child: ExperienceM(),
               ),
+              Text("$oriExperience"),
               // 修改按钮
 
               Padding(

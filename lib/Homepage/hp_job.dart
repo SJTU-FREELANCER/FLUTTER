@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
+import 'package:freelancer/sharedinfo/user_info.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
@@ -25,6 +26,7 @@ class _JobsState extends State<Jobs> {
   String _ftitle;
   String _fexp;
   String _fedu;
+  var _recid;
 
   var para = new Map<String, String>();
 
@@ -53,6 +55,8 @@ class _JobsState extends State<Jobs> {
         var enrolled = index["rec_Enrolled"];
         var education = index["rec_Education"];
         var experience = index["rec_Experience"];
+
+        _recid = index["rex_ID"];
         list.add(
           Card(
             margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
@@ -172,7 +176,6 @@ class _JobsState extends State<Jobs> {
   }
 
   _filteredCards() async {
-    print("get here start");
     List<Widget> list = new List();
 
     //var apiUrlf = "${baseUrl}filt_jobs";
@@ -198,6 +201,8 @@ class _JobsState extends State<Jobs> {
         var enrolled = index["rec_Enrolled"];
         var education = index["rec_Education"];
         var experience = index["rec_Experience"];
+        _recid = index["rec_ID"];
+
         list.add(
           Card(
             margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
@@ -228,9 +233,7 @@ class _JobsState extends State<Jobs> {
                           child: Text("申请",
                               style:
                                   TextStyle(fontSize: 12, color: Colors.white)),
-                          onPressed: () {
-                            _addApplyInfo;
-                          },
+                          onPressed: _addApplyInfo,
                         ),
                       ),
                     ],
@@ -318,7 +321,17 @@ class _JobsState extends State<Jobs> {
     }
   }
 
-  _addApplyInfo() {}
+  _addApplyInfo() async {
+    var apiUrl = "${baseUrl}get_jobs";
+    var result;
+
+    result = await http.post(apiUrl,
+        body: {"user_id": userID.toString(), "rec_id": _recid.toString()});
+
+    if (result.statusCode == 200) {
+      print("success");
+    }
+  }
 
   @override
   void initState() {
