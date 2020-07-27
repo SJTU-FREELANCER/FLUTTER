@@ -37,9 +37,9 @@ class _CreatejobshomeState extends State<Createjobshome> {
   String _exp;
   String _edu;
   _sendReinfo() async {
-    var apiUrl = "${baseUrl}register?";
+    var apiUrl = "${baseUrl}create_job";
     var result = await http.post(apiUrl, body: {
-      "userid": _userid,
+      "userid": _userid.toString(),
       "salary": _salary,
       "location": _location,
       "schedule": _schedule,
@@ -51,7 +51,7 @@ class _CreatejobshomeState extends State<Createjobshome> {
       "edu": _edu,
     });
     if (result.statusCode == 200) {
-      print(json.decode(result.body) is Map);
+      print(" create recruit success! ");
     } else {
       print(result.statusCode);
     }

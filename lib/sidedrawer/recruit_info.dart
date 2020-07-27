@@ -1,50 +1,55 @@
 import 'package:flutter/material.dart';
+
 import 'package:freelancer/Homepage/detail_job.dart';
 
-import 'dart:convert';
 import 'package:freelancer/sharedinfo/config.dart';
 import 'package:freelancer/sharedinfo/user_info.dart';
+
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-import '../Homepage/mainpage.dart';
+int tmprecid;
+int taruserid;
 
-class FlMyApplicants extends StatelessWidget {
+class SDMyApplicants extends StatefulWidget {
+  int tarrecid;
+  SDMyApplicants({
+    Key key,
+    @required this.tarrecid,
+  }) : super(key: key);
+
+  @override
+  _SDMyApplicantsState createState() => _SDMyApplicantsState();
+}
+
+class _SDMyApplicantsState extends State<SDMyApplicants> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return MaterialApp(
-      home: FormTestRoute(),
-    );
+    tmprecid = widget.tarrecid;
+    return SDMyappshome();
   }
 }
 
-class FormTestRoute extends StatefulWidget {
+class SDMyappshome extends StatefulWidget {
   @override
-  _FormTestRouteState createState() => new _FormTestRouteState();
+  _SDMyappshomeState createState() => new _SDMyappshomeState();
 }
 
-class _FormTestRouteState extends State<FormTestRoute> {
+class _SDMyappshomeState extends State<SDMyappshome> {
   GlobalKey _formKey = new GlobalKey<FormState>();
 
-  int _userid = userID;
-  String _salary;
-  String _location;
-  String _schedule;
-  String _title;
-  String _cate;
-  String _quota;
-  String _desc;
-  String _exp;
-  String _edu;
+  int isAccepted;
 
-  List<Widget> myRecslist = new List();
-  var para = new Map<String, String>();
+  List<Widget> tarApplist = new List();
 
-  _deleteApp(int rid) async {
-    //var apiUrl = "${baseUrl}delete_rec";
+  _setApp(int rid, int uid) async {
     var result;
-    var uri = Uri.http("10.0.2.2:8080", "/delete_apply_info",
-        {"rec_id": rid.toString(), "user_id": userID.toString()});
+    var uri = Uri.http("10.0.2.2:8080", "/update_apply_info", {
+      "rec_id": rid.toString(),
+      "user_id": uid.toString(),
+      "accepted": isAccepted.toString(),
+    });
 
     result = await http.get(uri);
 
@@ -58,26 +63,32 @@ class _FormTestRouteState extends State<FormTestRoute> {
 
   _getMyApps() async {
     List<Widget> list = new List();
-
-    var apiUrl = "${baseUrl}getAppbyId";
     var result;
+    Map<String, String> para = {"rec_id": tmprecid.toString()};
 
-    result = await http.post(apiUrl, body: {"userid": userID.toString()});
+    var uri = Uri.http("10.0.2.2:8080", "/getMyApplicants", para);
+
+    result = await http.get(uri);
+    print(result);
+
     Utf8Decoder decode = new Utf8Decoder();
 
     if (result.statusCode == 200) {
-      print(jsonDecode(decode.convert(result.bodyBytes)) is List);
+      // print(jsonDecode(decode.convert(result.bodyBytes)) is List);
       List tmp = jsonDecode(decode.convert(result.bodyBytes));
 
       for (int i = 0; i < tmp.length; i++) {
         var index = tmp[i];
-        var salary = index["rec_Salary"];
-        var location = index["rec_Location"];
-        var title = index["rec_Title"];
-        var cate = index["rec_Cate"];
-        var enrolled = index["rec_Enrolled"];
-        var education = index["rec_Education"];
-        var experience = index["rec_Experience"];
+
+        var appname = index["name"];
+        var appuserid = index["user_ID"];
+        taruserid = appuserid;
+        var appbirth = index["birth"];
+        var apgender = index["gender"];
+        var appgender = (apgender == "true") ? "男" : "女";
+
+        var education = index["education"];
+        var experience = index["experience"];
         var accepted = index["accepted"];
 
         String acceptedshow;
@@ -98,8 +109,8 @@ class _FormTestRouteState extends State<FormTestRoute> {
             child: Column(
               children: [
                 ListTile(
-                  title: Text("$cate|$title"),
-                  subtitle: Text("$salary 元/月"),
+                  title: Text("$appname|$appgender"),
+                  subtitle: Text("$appbirth"),
                   trailing: Column(
                     children: [
                       Container(
@@ -118,11 +129,11 @@ class _FormTestRouteState extends State<FormTestRoute> {
                         height: 30,
                         child: RaisedButton(
                           color: Colors.green,
-                          child: Text("取消",
+                          child: Text("审核",
                               style:
                                   TextStyle(fontSize: 12, color: Colors.white)),
                           onPressed: () {
-                            _deleteApp(_recid);
+                            _onshow(_recid, appuserid);
                           },
                         ),
                       ),
@@ -137,7 +148,7 @@ class _FormTestRouteState extends State<FormTestRoute> {
                         bottom: 3,
                       ),
                       child: Text(
-                        "$location",
+                        "自由",
                         style:
                             TextStyle(fontSize: 14, color: Colors.indigoAccent),
                       ),
@@ -152,20 +163,7 @@ class _FormTestRouteState extends State<FormTestRoute> {
                     child: IconButton(
                       color: Colors.indigoAccent,
                       icon: Icon(Icons.keyboard_arrow_right),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => new Jobdetail(
-                                reccate: index["rec_Cate"],
-                                rectitle: index["rec_Title"],
-                                recsalary: index["rec_salary"],
-                                recedu: index["rec_Education"],
-                                recexp: index["rec_Experience"],
-                                recdes: index["rec_Desc"],
-                              ),
-                            ));
-                      },
+                      onPressed: () {},
                     ),
                   ),
                 ),
@@ -204,11 +202,62 @@ class _FormTestRouteState extends State<FormTestRoute> {
       }
 
       setState(() {
-        myRecslist = list;
+        tarApplist = list;
       });
     } else {
       print(result.statusCode);
     }
+  }
+
+  _onshow(int rid, int uid) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          title: const Text('请填写决策结果'),
+          children: <Widget>[
+            TextField(
+              decoration: InputDecoration(
+                labelText: "通过/驳回/审核中",
+                prefixIcon: Icon(Icons.category),
+                // 未获得焦点下划线设为灰色
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey),
+                ),
+                //获得焦点下划线设为蓝色
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.blue),
+                ),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  if (value == "通过")
+                    isAccepted = 1;
+                  else if (value == "驳回")
+                    isAccepted = 2;
+                  else
+                    isAccepted = 0;
+                });
+              },
+            ),
+            Container(
+              width: 40,
+              height: 40,
+              child: RaisedButton(
+                child: Text("提交",
+                    style: TextStyle(fontSize: 12, color: Colors.white)),
+                onPressed: () {
+                  _setApp(rid, taruserid);
+                },
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -240,7 +289,7 @@ class _FormTestRouteState extends State<FormTestRoute> {
                           IconButton(
                             icon: Icon(Icons.keyboard_arrow_left),
                             onPressed: () {
-                              runApp(FlMainpage());
+                              Navigator.pop(context);
                             },
                           ),
                           Padding(
@@ -249,7 +298,7 @@ class _FormTestRouteState extends State<FormTestRoute> {
                               bottom: 30,
                             ),
                             child: Text(
-                              "应聘信息",
+                              "申请人信息",
                               style: TextStyle(
                                 fontSize: 32,
                               ),
@@ -267,7 +316,7 @@ class _FormTestRouteState extends State<FormTestRoute> {
             height: 400,
             width: 400,
             child: ListView(
-              children: myRecslist,
+              children: tarApplist,
             ),
           )
         ],

@@ -58,7 +58,6 @@ class _JobdetailState extends State<Jobdetail> {
                   icon: Icon(Icons.keyboard_arrow_left),
                   onPressed: () {
                     Navigator.pop(context);
-                    // runApp(FlMainpage());
                   },
                 ),
                 Padding(
