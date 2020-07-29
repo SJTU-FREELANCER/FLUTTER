@@ -1,49 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:freelancer/Homepage/detail_job.dart';
 
 import 'dart:convert';
+import 'package:freelancer/sharedinfo/config.dart';
+import 'package:freelancer/sharedinfo/user_info.dart';
 import 'package:http/http.dart' as http;
 
-int tmprecid;
-int taruserid;
+import '../Homepage/mainpage.dart';
 
-class SDMyApplicants extends StatefulWidget {
-  int tarrecid;
-  SDMyApplicants({
-    Key key,
-    @required this.tarrecid,
-  }) : super(key: key);
-
-  @override
-  _SDMyApplicantsState createState() => _SDMyApplicantsState();
-}
-
-class _SDMyApplicantsState extends State<SDMyApplicants> {
+class FlRecievedOffer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    tmprecid = widget.tarrecid;
-    return SDMyappshome();
+    return MaterialApp(
+      home: FormTestRoute(),
+    );
   }
 }
 
-class SDMyappshome extends StatefulWidget {
+class FormTestRoute extends StatefulWidget {
   @override
-  _SDMyappshomeState createState() => new _SDMyappshomeState();
+  _FormTestRouteState createState() => new _FormTestRouteState();
 }
 
-class _SDMyappshomeState extends State<SDMyappshome> {
+class _FormTestRouteState extends State<FormTestRoute> {
   GlobalKey _formKey = new GlobalKey<FormState>();
 
-  int isAccepted;
+  int _userid = userID;
+  String _salary;
+  String _location;
+  String _schedule;
+  String _title;
+  String _cate;
+  String _quota;
+  String _desc;
+  String _exp;
+  String _edu;
 
-  List<Widget> tarApplist = new List();
+  List<Widget> myRecslist = new List();
+  var para = new Map<String, String>();
 
-  _setApp(int rid, int uid) async {
+  _makeMyDecision(int rid, int uid, int iaflag) async {
     var result;
-    var uri = Uri.http("10.0.2.2:8080", "/update_apply_info", {
+    var uri = Uri.http("10.0.2.2:8080", "/update_employ_info", {
       "rec_id": rid.toString(),
       "user_id": uid.toString(),
-      "accepted": isAccepted.toString(),
+      "accepted": iaflag.toString()
     });
 
     result = await http.get(uri);
@@ -58,41 +60,35 @@ class _SDMyappshomeState extends State<SDMyappshome> {
 
   _getMyApps() async {
     List<Widget> list = new List();
+
+    var apiUrl = "${baseUrl}getEmpbyId";
     var result;
-    Map<String, String> para = {"rec_id": tmprecid.toString()};
 
-    var uri = Uri.http("10.0.2.2:8080", "/getMyApplicants", para);
-
-    result = await http.get(uri);
-    print(result);
-
+    result = await http.post(apiUrl, body: {"userid": userID.toString()});
     Utf8Decoder decode = new Utf8Decoder();
 
     if (result.statusCode == 200) {
-      // print(jsonDecode(decode.convert(result.bodyBytes)) is List);
+      print(jsonDecode(decode.convert(result.bodyBytes)) is List);
       List tmp = jsonDecode(decode.convert(result.bodyBytes));
 
       for (int i = 0; i < tmp.length; i++) {
         var index = tmp[i];
-
-        var appname = index["name"];
-        var appuserid = index["user_ID"];
-        taruserid = appuserid;
-        var appbirth = index["birth"];
-        var apgender = index["gender"];
-        var appgender = (apgender == "true") ? "男" : "女";
-
-        var education = index["education"];
-        var experience = index["experience"];
+        var salary = index["rec_Salary"];
+        var location = index["rec_Location"];
+        var title = index["rec_Title"];
+        var cate = index["rec_Cate"];
+        var enrolled = index["rec_Enrolled"];
+        var education = index["rec_Education"];
+        var experience = index["rec_Experience"];
         var accepted = index["accepted"];
 
         String acceptedshow;
         if (accepted == 0)
-          acceptedshow = "待审核";
+          acceptedshow = "待考察";
         else if (accepted == 1)
-          acceptedshow = "已通过";
+          acceptedshow = "已同意";
         else {
-          acceptedshow = "未通过";
+          acceptedshow = "已拒绝";
         }
 
         var _recid = index["rec_ID"];
@@ -104,8 +100,8 @@ class _SDMyappshomeState extends State<SDMyappshome> {
             child: Column(
               children: [
                 ListTile(
-                  title: Text("$appname|$appgender"),
-                  subtitle: Text("$appbirth"),
+                  title: Text("$cate|$title"),
+                  subtitle: Text("$salary 元/月"),
                   trailing: Column(
                     children: [
                       Container(
@@ -124,11 +120,12 @@ class _SDMyappshomeState extends State<SDMyappshome> {
                         height: 30,
                         child: RaisedButton(
                           color: Colors.green,
-                          child: Text("审核",
+                          child: Text("选择",
                               style:
                                   TextStyle(fontSize: 12, color: Colors.white)),
                           onPressed: () {
-                            _onshow(_recid, appuserid);
+                            var isAccepted;
+                            _makeMyDecision(_recid, userID, isAccepted);
                           },
                         ),
                       ),
@@ -143,7 +140,7 @@ class _SDMyappshomeState extends State<SDMyappshome> {
                         bottom: 3,
                       ),
                       child: Text(
-                        "自由",
+                        "$location",
                         style:
                             TextStyle(fontSize: 14, color: Colors.indigoAccent),
                       ),
@@ -158,7 +155,20 @@ class _SDMyappshomeState extends State<SDMyappshome> {
                     child: IconButton(
                       color: Colors.indigoAccent,
                       icon: Icon(Icons.keyboard_arrow_right),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => new Jobdetail(
+                                reccate: index["rec_Cate"],
+                                rectitle: index["rec_Title"],
+                                recsalary: index["rec_salary"],
+                                recedu: index["rec_Education"],
+                                recexp: index["rec_Experience"],
+                                recdes: index["rec_Desc"],
+                              ),
+                            ));
+                      },
                     ),
                   ),
                 ),
@@ -197,62 +207,11 @@ class _SDMyappshomeState extends State<SDMyappshome> {
       }
 
       setState(() {
-        tarApplist = list;
+        myRecslist = list;
       });
     } else {
       print(result.statusCode);
     }
-  }
-
-  _onshow(int rid, int uid) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return SimpleDialog(
-          title: const Text('请填写决策结果'),
-          children: <Widget>[
-            TextField(
-              decoration: InputDecoration(
-                labelText: "通过/驳回/审核中",
-                prefixIcon: Icon(Icons.category),
-                // 未获得焦点下划线设为灰色
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey),
-                ),
-                //获得焦点下划线设为蓝色
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.blue),
-                ),
-              ),
-              onChanged: (value) {
-                setState(() {
-                  if (value == "通过")
-                    isAccepted = 1;
-                  else if (value == "驳回")
-                    isAccepted = 2;
-                  else
-                    isAccepted = 0;
-                });
-              },
-            ),
-            Container(
-              width: 40,
-              height: 40,
-              child: RaisedButton(
-                child: Text("提交",
-                    style: TextStyle(fontSize: 12, color: Colors.white)),
-                onPressed: () {
-                  _setApp(rid, taruserid);
-                },
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
@@ -284,7 +243,7 @@ class _SDMyappshomeState extends State<SDMyappshome> {
                           IconButton(
                             icon: Icon(Icons.keyboard_arrow_left),
                             onPressed: () {
-                              Navigator.pop(context);
+                              runApp(FlMainpage());
                             },
                           ),
                           Padding(
@@ -293,7 +252,7 @@ class _SDMyappshomeState extends State<SDMyappshome> {
                               bottom: 30,
                             ),
                             child: Text(
-                              "申请人信息",
+                              "收到的offer",
                               style: TextStyle(
                                 fontSize: 32,
                               ),
@@ -311,7 +270,7 @@ class _SDMyappshomeState extends State<SDMyappshome> {
             height: 400,
             width: 400,
             child: ListView(
-              children: tarApplist,
+              children: myRecslist,
             ),
           )
         ],

@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:freelancer/Homepage/create_applicants.dart';
 import 'package:freelancer/Homepage/create_jobs.dart';
 import 'package:freelancer/sharedinfo/user_info.dart';
+import 'package:freelancer/sidedrawer/recieved_offer.dart';
 import 'package:freelancer/startup/login.dart';
 import 'package:freelancer/sidedrawer/managepage.dart';
 import 'package:freelancer/sidedrawer/myapplicants.dart';
@@ -200,6 +201,16 @@ class MyDrawer extends StatelessWidget {
         title: const Text('我的应聘'),
         onTap: () {
           runApp(FlMyApplicants());
+        },
+      ),
+      ListTile(
+        leading: const Icon(
+          Icons.file_upload,
+          color: Colors.purpleAccent,
+        ),
+        title: const Text('我的offer'),
+        onTap: () {
+          runApp(FlRecievedOffer());
         },
       ),
       ListTile(
