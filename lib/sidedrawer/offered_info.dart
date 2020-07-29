@@ -6,18 +6,18 @@ import 'package:http/http.dart' as http;
 int tmprecid;
 int taruserid;
 
-class SDMyApplicants extends StatefulWidget {
+class SDMyoffers extends StatefulWidget {
   int tarrecid;
-  SDMyApplicants({
+  SDMyoffers({
     Key key,
     @required this.tarrecid,
   }) : super(key: key);
 
   @override
-  _SDMyApplicantsState createState() => _SDMyApplicantsState();
+  _SDMyoffersState createState() => _SDMyoffersState();
 }
 
-class _SDMyApplicantsState extends State<SDMyApplicants> {
+class _SDMyoffersState extends State<SDMyoffers> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -61,7 +61,7 @@ class _SDMyappshomeState extends State<SDMyappshome> {
     var result;
     Map<String, String> para = {"rec_id": tmprecid.toString()};
 
-    var uri = Uri.http("10.0.2.2:8080", "/getMyApplicants", para);
+    var uri = Uri.http("10.0.2.2:8080", "/getMyEmployees", para);
 
     result = await http.get(uri);
     print(result);

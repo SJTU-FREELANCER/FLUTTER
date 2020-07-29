@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:freelancer/sharedinfo/config.dart';
+import 'package:freelancer/sharedinfo/user_info.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:freelancer/Homepage/detail_job.dart'; //每个新建的都要引入
@@ -67,7 +68,10 @@ class _ApplicantsState extends State<Applicants> {
                           child: Text("招聘",
                               style:
                                   TextStyle(fontSize: 12, color: Colors.white)),
-                          onPressed: () {},
+                          onPressed: () {
+                            _getMyrecs(user_Id);
+                            _showSelection();
+                          },
                         ),
                       ),
                     ],
@@ -164,7 +168,7 @@ class _ApplicantsState extends State<Applicants> {
         var gender = index["gender"];
         var genders = gender ? "男" : "女";
         var experience = index["experience"];
-        // var user_Id = index["user_Id"];
+        var user_Id = index["user_Id"];
         list.add(
           Card(
             margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
@@ -195,7 +199,10 @@ class _ApplicantsState extends State<Applicants> {
                           child: Text("招聘",
                               style:
                                   TextStyle(fontSize: 12, color: Colors.white)),
-                          onPressed: () {},
+                          onPressed: () {
+                            _getMyrecs(user_Id);
+                            _showSelection();
+                          },
                         ),
                       ),
                     ],
@@ -382,5 +389,193 @@ class _ApplicantsState extends State<Applicants> {
             ],
           );
         });
+  }
+
+  //for user to choose which
+  int _userid = userID;
+  String _salary;
+  String _location;
+  String _schedule;
+  String _title;
+  String _cate;
+  String _quota;
+  String _desc;
+  String _exp;
+  String _edu;
+
+  List<Widget> myRecslist = new List();
+
+  _getMyrecs(int taruid) async {
+    List<Widget> list = new List();
+
+    var apiUrl = "${baseUrl}getRecbyId";
+    var result;
+
+    result = await http.post(apiUrl, body: {"userid": userID.toString()});
+    Utf8Decoder decode = new Utf8Decoder();
+
+    if (result.statusCode == 200) {
+      print(jsonDecode(decode.convert(result.bodyBytes)) is List);
+      List tmp = jsonDecode(decode.convert(result.bodyBytes));
+
+      for (int i = 0; i < tmp.length; i++) {
+        var index = tmp[i];
+        var salary = index["rec_salary"];
+        var location = index["rec_Location"];
+        var title = index["rec_Title"];
+        var cate = index["rec_Cate"];
+        var enrolled = index["rec_Enrolled"];
+        var education = index["rec_Education"];
+        var experience = index["rec_Experience"];
+
+        var _recid = index["rec_ID"];
+
+        list.add(
+          Card(
+            margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+            elevation: 15.0,
+            child: Column(
+              children: [
+                ListTile(
+                  title: Text("$cate|$title"),
+                  subtitle: Text("$salary 元/月"),
+                  trailing: Column(
+                    children: [
+                      Container(
+                        width: 80,
+                        height: 15,
+                        child: Text(
+                          "$enrolled 人进入",
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Container(
+                        width: 80,
+                        height: 30,
+                        child: RaisedButton(
+                          color: Colors.green,
+                          child: Text("选择",
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.white)),
+                          onPressed: () {
+                            _sendOffer(taruid, _recid);
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: 20,
+                        bottom: 3,
+                      ),
+                      child: Text(
+                        "$location",
+                        style:
+                            TextStyle(fontSize: 14, color: Colors.indigoAccent),
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 350),
+                  child: Container(
+                    width: 30,
+                    height: 30,
+                    child: IconButton(
+                      color: Colors.indigoAccent,
+                      icon: Icon(Icons.keyboard_arrow_right),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => new Jobdetail(
+                                reccate: index["rec_Cate"],
+                                rectitle: index["rec_Title"],
+                                recsalary: index["rec_salary"],
+                                recedu: index["rec_Education"],
+                                recexp: index["rec_Experience"],
+                                recdes: index["rec_Desc"],
+                              ),
+                            ));
+                      },
+                    ),
+                  ),
+                ),
+                Divider(
+                  height: 1.0,
+                  indent: 20.0,
+                  endIndent: 20,
+                  color: Colors.blueGrey,
+                ),
+                Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: 20,
+                        top: 3,
+                        bottom: 5,
+                      ),
+                      child: Text(
+                        "教育：$education",
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 100),
+                      child: Text(
+                        "经验：$experience",
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+
+      setState(() {
+        myRecslist = list;
+      });
+    } else {
+      print(result.statusCode);
+    }
+  }
+
+  _sendOffer(int uid, int rid) async {
+    var result;
+    var uri = Uri.http("10.0.2.2:8080", "/add_employ_info", {
+      "rec_id": rid.toString(),
+      "user_id": uid.toString(),
+    });
+
+    result = await http.get(uri);
+
+    if (result.statusCode == 200) {
+      print("success");
+    } else {
+      print(result.statusCode);
+    }
+  }
+
+  void _showSelection() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          title: const Text('请选择职位'),
+          children: myRecslist,
+        );
+      },
+    );
   }
 }

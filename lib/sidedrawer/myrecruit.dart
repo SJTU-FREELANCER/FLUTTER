@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:freelancer/sharedinfo/config.dart';
 import 'package:freelancer/sharedinfo/user_info.dart';
+import 'package:freelancer/sidedrawer/offered_info.dart';
 import 'package:freelancer/sidedrawer/recruit_info.dart';
 import 'package:http/http.dart' as http;
 
@@ -403,6 +404,25 @@ class _FormTestRouteState extends State<FormTestRoute> {
                       child: Text("修改招聘信息"),
                       onPressed: () {
                         _onshow(_recid);
+                      },
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 50,
+                    ),
+                    RaisedButton(
+                      child: Text("查看招聘者"),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            new MaterialPageRoute(
+                              builder: (context) => SDMyoffers(
+                                tarrecid: _recid,
+                              ),
+                            ));
                       },
                     ),
                     SizedBox(
