@@ -33,7 +33,7 @@ class Managebody extends StatefulWidget {
 class _ManagebodyState extends State<Managebody> {
   String taruser;
   _setUser() async {
-    var apiUrl = "${baseUrl}register?";
+    var apiUrl = "${baseUrl}change_state";
     var result = await http.post(apiUrl, body: {
       "userid": taruser,
     });
