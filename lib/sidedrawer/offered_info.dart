@@ -38,12 +38,11 @@ class _SDMyappshomeState extends State<SDMyappshome> {
 
   List<Widget> tarApplist = new List();
 
-  _setApp(int rid, int uid) async {
+  _retrieveOffer(int rid, int uid) async {
     var result;
-    var uri = Uri.http("10.0.2.2:8080", "/update_apply_info", {
+    var uri = Uri.http("10.0.2.2:8080", "/delete_employ_info", {
       "rec_id": rid.toString(),
       "user_id": uid.toString(),
-      "accepted": isAccepted.toString(),
     });
 
     result = await http.get(uri);
@@ -124,11 +123,11 @@ class _SDMyappshomeState extends State<SDMyappshome> {
                         height: 30,
                         child: RaisedButton(
                           color: Colors.green,
-                          child: Text("审核",
+                          child: Text("撤回",
                               style:
                                   TextStyle(fontSize: 12, color: Colors.white)),
                           onPressed: () {
-                            _onshow(_recid, appuserid);
+                            _retrieveOffer(_recid, appuserid);
                           },
                         ),
                       ),
@@ -242,7 +241,7 @@ class _SDMyappshomeState extends State<SDMyappshome> {
                 child: Text("提交",
                     style: TextStyle(fontSize: 12, color: Colors.white)),
                 onPressed: () {
-                  _setApp(rid, taruserid);
+                  //_setApp(rid, taruserid);
                 },
               ),
             ),

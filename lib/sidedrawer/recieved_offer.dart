@@ -37,8 +37,48 @@ class _FormTestRouteState extends State<FormTestRoute> {
   String _exp;
   String _edu;
 
+  int isAccepted;
+
   List<Widget> myRecslist = new List();
   var para = new Map<String, String>();
+  _makeMyChoice(int rid, int uid, int iaflag) {
+    List<DropdownMenuItem<int>> choiceitem = [];
+
+    choiceitem.add(DropdownMenuItem(value: 0, child: Text("待审核")));
+    choiceitem.add(DropdownMenuItem(value: 1, child: Text("已同意")));
+    choiceitem.add(DropdownMenuItem(value: 2, child: Text("已拒绝")));
+
+    showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            children: [
+              Container(
+                height: 50,
+                width: 50,
+                child: DropdownButton(
+                  value: 2,
+                  items: choiceitem,
+                  onChanged: (value) {
+                    setState(() {
+                      iaflag = value;
+                    });
+                    print("$iaflag");
+                  },
+                ),
+              ),
+              Container(
+                child: RaisedButton(
+                  child: Text("确定"),
+                  onPressed: () {
+                    _makeMyDecision(rid, uid, iaflag);
+                  },
+                ),
+              )
+            ],
+          );
+        });
+  }
 
   _makeMyDecision(int rid, int uid, int iaflag) async {
     var result;
@@ -124,8 +164,7 @@ class _FormTestRouteState extends State<FormTestRoute> {
                               style:
                                   TextStyle(fontSize: 12, color: Colors.white)),
                           onPressed: () {
-                            var isAccepted;
-                            _makeMyDecision(_recid, userID, isAccepted);
+                            _makeMyChoice(_recid, userID, isAccepted);
                           },
                         ),
                       ),
