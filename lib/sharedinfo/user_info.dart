@@ -7,3 +7,5 @@ String userEmail;
 String userPhone;
 String userRname;
 String userPassword;
+
+String secToken;
