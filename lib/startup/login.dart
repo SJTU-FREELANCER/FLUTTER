@@ -32,18 +32,32 @@ class _LoginBodyState extends State<LoginBody> {
   String _password;
   bool _flag = false;
   _getValidation() async {
-    var apiUrl = "${baseUrl}login?";
+    var apiUrl = "${serviceUrl}login?";
     var result = await http.post(apiUrl,
         body: {"username": "$_username", "password": "$_password"});
-    if (result.statusCode == 200) {
+
+    var tapiUrl = Uri.http(
+        "ec2-3-17-140-221.us-east-2.compute.amazonaws.com:8080",
+        "/login",
+        {"username": _username, "password": _password.toString()});
+    print(tapiUrl);
+    var tresult = await http.get(tapiUrl);
+
+    if (result.statusCode == 200 && tresult.statusCode == 200) {
       Map tmp = json.decode(result.body);
+      Map ttmp = json.decode(result.body);
+
+      secToken = ttmp["token"];
+      print(tmp);
+      print(secToken);
       userStatus = tmp["status"];
+      var user = tmp["user"];
+      userRole = user["role"];
+
       if ((userStatus == 2 || userStatus == 1) && userRole != 2) {
-        _flag = true;
+        //_flag = true;
         print("login success");
 
-        var user = tmp["user"];
-        userRole = user["role"];
         userID = user["user_ID"];
         userName = user["userName"];
         userRname = user["user_Name"];
@@ -54,9 +68,17 @@ class _LoginBodyState extends State<LoginBody> {
         print("$userID");
         print("$userName");
         print("$userRname");
+      } else {
+        if (userRole == 2)
+          print(
+              "You are locked by some reason, please contact us: 033-3333-3333");
+        else {
+          print("wrong username/password");
+        }
       }
     } else {
       print(result.statusCode);
+      print(tresult.statusCode);
     }
   }
 
