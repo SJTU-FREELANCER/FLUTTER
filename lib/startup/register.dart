@@ -167,32 +167,32 @@ class _RegisterBodyState extends State<RegisterBody> {
                 onPressed: () {
                   _sendReinfo();
 
-                  // showDialog<Null>(
-                  //   context: context,
-                  //   barrierDismissible: false,
-                  //   builder: (BuildContext context) {
-                  //     return new AlertDialog(
-                  //       title: new Text('注册结果'),
-                  //       content: new SingleChildScrollView(
-                  //         child: new ListBody(
-                  //           children: <Widget>[
-                  //             new Text('您已经完成注册，请返回登陆！'),
-                  //           ],
-                  //         ),
-                  //       ),
-                  //       actions: <Widget>[
-                  //         new FlatButton(
-                  //           child: new Text('返回登陆界面'),
-                  //           onPressed: () {
-                  //             runApp(FlLogin());
-                  //           },
-                  //         ),
-                  //       ],
-                  //     );
-                  //   },
-                  // ).then((val) {
-                  //   print(val);
-                  // });
+                  showDialog<Null>(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (BuildContext context) {
+                      return new AlertDialog(
+                        title: new Text('注册结果'),
+                        content: new SingleChildScrollView(
+                          child: new ListBody(
+                            children: <Widget>[
+                              new Text('您已经完成注册，请返回登陆！'),
+                            ],
+                          ),
+                        ),
+                        actions: <Widget>[
+                          new FlatButton(
+                            child: new Text('返回登陆界面'),
+                            onPressed: () {
+                              runApp(FlLogin());
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  ).then((val) {
+                    print(val);
+                  });
                 },
               ),
             ),

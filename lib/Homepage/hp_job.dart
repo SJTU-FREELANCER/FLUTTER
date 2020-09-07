@@ -61,7 +61,8 @@ class _JobsState extends State<Jobs> {
         var education = index["rec_Education"];
         var experience = index["rec_Experience"];
 
-        _recid = index["rex_ID"];
+        //18:07
+        var rrid = index["rec_ID"];
         list.add(
           Card(
             margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
@@ -93,7 +94,7 @@ class _JobsState extends State<Jobs> {
                               style:
                                   TextStyle(fontSize: 12, color: Colors.white)),
                           onPressed: () {
-                            _addApplyInfo();
+                            _addApplyInfo(rrid);
                           },
                         ),
                       ),
@@ -208,7 +209,7 @@ class _JobsState extends State<Jobs> {
         var enrolled = index["rec_Enrolled"];
         var education = index["rec_Education"];
         var experience = index["rec_Experience"];
-        _recid = index["rec_ID"];
+        var rrid = index["rec_ID"];
 
         list.add(
           Card(
@@ -240,7 +241,7 @@ class _JobsState extends State<Jobs> {
                           child: Text("申请",
                               style:
                                   TextStyle(fontSize: 12, color: Colors.white)),
-                          onPressed: _addApplyInfo,
+                          onPressed: _addApplyInfo(rrid),
                         ),
                       ),
                     ],
@@ -354,7 +355,7 @@ class _JobsState extends State<Jobs> {
         var enrolled = index["rec_Enrolled"];
         var education = index["rec_Education"];
         var experience = index["rec_Experience"];
-        _recid = index["rec_ID"];
+        var rrid = index["rec_ID"];
 
         list.add(
           Card(
@@ -386,7 +387,7 @@ class _JobsState extends State<Jobs> {
                           child: Text("申请",
                               style:
                                   TextStyle(fontSize: 12, color: Colors.white)),
-                          onPressed: _addApplyInfo,
+                          onPressed: _addApplyInfo(rrid),
                         ),
                       ),
                     ],
@@ -474,16 +475,17 @@ class _JobsState extends State<Jobs> {
     }
   }
 
-  _addApplyInfo() async {
+  _addApplyInfo(int rid) async {
     Options options =
         Options(headers: {HttpHeaders.authorizationHeader: "Bearer $secToken"});
     options.responseType = ResponseType.plain;
     Response result;
     var uri = Uri.http(serviceUri, "/add_apply_info",
-        {"user_id": userID.toString(), "rec_id": _recid.toString()});
+        {"user_id": userID.toString(), "rec_id": rid.toString()});
     result = await Dio().get("$uri", options: options);
 
     if (result.statusCode == 200) {
+      print("$rid");
       print("success");
     } else {
       print(result.statusCode);

@@ -190,32 +190,32 @@ class _FormUserfile extends State<FormUserfile> {
                           if (confirm_password == userPassword) {
                             //验证通过提交数据
                             _editMyinfo();
-                            // showDialog<Null>(
-                            //   context: context,
-                            //   barrierDismissible: true,
-                            //   builder: (BuildContext context) {
-                            //     return new AlertDialog(
-                            //       title: new Text('修改结果'),
-                            //       content: new SingleChildScrollView(
-                            //         child: new ListBody(
-                            //           children: <Widget>[
-                            //             new Text('您已经完成修改，请返回查看！'),
-                            //           ],
-                            //         ),
-                            //       ),
-                            //       actions: <Widget>[
-                            //         new FlatButton(
-                            //           child: new Text('返回'),
-                            //           onPressed: () {
-                            //             // runApp(FlMainpage());
-                            //           },
-                            //         ),
-                            //       ],
-                            //     );
-                            //   },
-                            // ).then((val) {
-                            //   print(val);
-                            // });
+                            showDialog<Null>(
+                              context: context,
+                              barrierDismissible: true,
+                              builder: (BuildContext context) {
+                                return new AlertDialog(
+                                  title: new Text('修改结果'),
+                                  content: new SingleChildScrollView(
+                                    child: new ListBody(
+                                      children: <Widget>[
+                                        new Text('您已经完成修改，请返回查看！'),
+                                      ],
+                                    ),
+                                  ),
+                                  actions: <Widget>[
+                                    new FlatButton(
+                                      child: new Text('返回'),
+                                      onPressed: () {
+                                        runApp(FlMainpage());
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            ).then((val) {
+                              print(val);
+                            });
                           }
                         },
                       ),
