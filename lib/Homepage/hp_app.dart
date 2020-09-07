@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:freelancer/sharedinfo/config.dart';
 import 'package:freelancer/sharedinfo/user_info.dart';
 import 'package:http/http.dart' as http;
@@ -22,12 +24,19 @@ class _ApplicantsState extends State<Applicants> {
   List<Widget> applist = new List();
   _getApps() async {
     List<Widget> list = new List();
-    var apiUrl = "${baseUrl}get_applicants";
-    var result = await http.get(apiUrl);
-    Utf8Decoder decode = new Utf8Decoder();
+
+    Dio dio = new Dio();
+    dio.options.baseUrl = serviceUrl;
+    dio.options.responseType = ResponseType.plain;
+
+    Response result;
+    result = await dio.post("/get_applicants");
+
+    // Utf8Decoder decode = new Utf8Decoder();
     if (result.statusCode == 200) {
-      print(jsonDecode(decode.convert(result.bodyBytes)) is List);
-      List tmp = jsonDecode(decode.convert(result.bodyBytes));
+      List tmp = jsonDecode(result.data);
+      print("json type is: ${tmp.runtimeType}");
+
       _refreshi += 20;
       for (int i = 0 + (_refreshi % 1000); i <= (_refreshi + 20) % 1000; i++) {
         var index = tmp[i];
@@ -148,16 +157,20 @@ class _ApplicantsState extends State<Applicants> {
 
   _filteredApps() async {
     List<Widget> list = new List();
-    var fresult;
-    var uri = Uri.http("10.0.2.2:8080", "/filt_applicants", para);
 
-    fresult = await http.get(uri);
+    Dio dio = new Dio();
+    dio.options.baseUrl = serviceUrl;
+    dio.options.responseType = ResponseType.plain;
 
-    Utf8Decoder decode = new Utf8Decoder();
+    Response fresult;
+    fresult = await dio.post("/filt_applicants", data: para);
+
+    // Utf8Decoder decode = new Utf8Decoder();
     if (fresult.statusCode == 200) {
-      print(jsonDecode(decode.convert(fresult.bodyBytes)) is List);
-      List tmp = jsonDecode(decode.convert(fresult.bodyBytes));
-
+      // print(jsonDecode(decode.convert(fresult.bodyBytes)) is List);
+      // List tmp = jsonDecode(decode.convert(fresult.bodyBytes));
+      List tmp = jsonDecode(fresult.data);
+      print("json type is: ${tmp.runtimeType}");
       print(tmp.length);
 
       for (int i = 0; i < tmp.length; i++) {
@@ -408,15 +421,19 @@ class _ApplicantsState extends State<Applicants> {
   _getMyrecs(int taruid) async {
     List<Widget> list = new List();
 
-    var apiUrl = "${baseUrl}getRecbyId";
-    var result;
+    Options options =
+        Options(headers: {HttpHeaders.authorizationHeader: "Bearer $secToken"});
+    options.responseType = ResponseType.plain;
+    Response result;
+    var uri =
+        Uri.http(serviceUri, "/getRecbyId", {"userid": userID.toString()});
+    result = await Dio().get("$uri", options: options);
 
-    result = await http.post(apiUrl, body: {"userid": userID.toString()});
-    Utf8Decoder decode = new Utf8Decoder();
+    //Utf8Decoder decode = new Utf8Decoder();
 
     if (result.statusCode == 200) {
-      print(jsonDecode(decode.convert(result.bodyBytes)) is List);
-      List tmp = jsonDecode(decode.convert(result.bodyBytes));
+      List tmp = jsonDecode(result.data);
+      print("json type is: ${tmp.runtimeType}");
 
       for (int i = 0; i < tmp.length; i++) {
         var index = tmp[i];
@@ -552,13 +569,13 @@ class _ApplicantsState extends State<Applicants> {
   }
 
   _sendOffer(int uid, int rid) async {
-    var result;
-    var uri = Uri.http("10.0.2.2:8080", "/add_employ_info", {
-      "rec_id": rid.toString(),
-      "user_id": uid.toString(),
-    });
-
-    result = await http.get(uri);
+    Options options =
+        Options(headers: {HttpHeaders.authorizationHeader: "Bearer $secToken"});
+    options.responseType = ResponseType.plain;
+    Response result;
+    var uri = Uri.http(serviceUri, "/add_employ_info",
+        {"user_id": uid.toString(), "rec_id": rid.toString()});
+    result = await Dio().get("$uri", options: options);
 
     if (result.statusCode == 200) {
       print("success");

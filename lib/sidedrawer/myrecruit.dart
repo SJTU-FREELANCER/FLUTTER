@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:freelancer/sharedinfo/config.dart';
 import 'package:freelancer/sharedinfo/user_info.dart';
 import 'package:freelancer/sidedrawer/offered_info.dart';
@@ -43,11 +45,12 @@ class _FormTestRouteState extends State<FormTestRoute> {
   var para = new Map<String, String>();
 
   _deleteRec(int rid) async {
-    var result;
-    var uri =
-        Uri.http("10.0.2.2:8080", "/delete_rec", {"rec_id": rid.toString()});
-
-    result = await http.get(uri);
+    Options options =
+        Options(headers: {HttpHeaders.authorizationHeader: "Bearer $secToken"});
+    options.responseType = ResponseType.plain;
+    Response result;
+    var uri = Uri.http(serviceUri, "/delete_rec", {"rec_id": rid.toString()});
+    result = await Dio().get("$uri", options: options);
 
     if (result.statusCode == 200) {
       print("success");
@@ -247,14 +250,17 @@ class _FormTestRouteState extends State<FormTestRoute> {
   }
 
   _updateMyrec(int rid) async {
-    var result;
+    Response result;
     para["rec_ID"] = rid.toString();
     para["user_ID"] = userID.toString();
     para["rec_Enrollled"] = null;
 
-    var uri = Uri.http("10.0.2.2:8080", "/update_rec", para);
+    Options options =
+        Options(headers: {HttpHeaders.authorizationHeader: "Bearer $secToken"});
+    options.responseType = ResponseType.plain;
 
-    result = await http.get(uri);
+    var uri = Uri.http(serviceUri, "/update_rec", para);
+    result = await Dio().get("$uri", options: options);
 
     if (result.statusCode == 200) {
       print("success");
@@ -267,15 +273,17 @@ class _FormTestRouteState extends State<FormTestRoute> {
   _getMyrecs() async {
     List<Widget> list = new List();
 
-    var apiUrl = "${baseUrl}getRecbyId";
-    var result;
-
-    result = await http.post(apiUrl, body: {"userid": userID.toString()});
-    Utf8Decoder decode = new Utf8Decoder();
+    Options options =
+        Options(headers: {HttpHeaders.authorizationHeader: "Bearer $secToken"});
+    options.responseType = ResponseType.plain;
+    Response result;
+    var uri =
+        Uri.http(serviceUri, "/getRecbyId", {"userid": userID.toString()});
+    result = await Dio().get("$uri", options: options);
 
     if (result.statusCode == 200) {
-      print(jsonDecode(decode.convert(result.bodyBytes)) is List);
-      List tmp = jsonDecode(decode.convert(result.bodyBytes));
+      List tmp = jsonDecode(result.data);
+      print("json type is: ${tmp.runtimeType}");
 
       for (int i = 0; i < tmp.length; i++) {
         var index = tmp[i];

@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cupertino_date_picker/flutter_cupertino_date_picker.dart';
 import 'package:freelancer/sharedinfo/config.dart';
@@ -10,10 +13,11 @@ import '../Homepage/mainpage.dart';
 
 int _userid = userID;
 String _name;
-bool _gender;
+String _gender;
 String _birth;
 String _experience;
 String _education;
+String _confirm_password;
 
 bool oriGender;
 var ogender;
@@ -37,16 +41,25 @@ class FormUserM extends StatefulWidget {
 }
 
 class _FormUserM extends State<FormUserM> {
+  TextEditingController _unameController = new TextEditingController();
+  TextEditingController _pwdController = new TextEditingController();
+  TextEditingController _genderController = new TextEditingController();
+  TextEditingController _birthController = new TextEditingController();
+  TextEditingController _educationController = new TextEditingController();
+  TextEditingController _experienceController = new TextEditingController();
   _getResume() async {
-    var apiUrl = "${baseUrl}getResumebyId";
-    var result = await http.post(apiUrl, body: {
+    Options options =
+        Options(headers: {HttpHeaders.authorizationHeader: "Bearer $secToken"});
+    options.responseType = ResponseType.plain;
+    Response result;
+    var uri = Uri.http(serviceUri, "/getResumebyId", {
       "user_id": userID.toString(),
     });
+    result = await Dio().get("$uri", options: options);
+
     if (result.statusCode == 200) {
       print("success");
-      Utf8Decoder decode = new Utf8Decoder();
-      print(jsonDecode(decode.convert(result.bodyBytes)) is List);
-      List tmp = jsonDecode(decode.convert(result.bodyBytes));
+      List tmp = jsonDecode(result.data);
       var index = tmp[0];
       oriGender = index["gender"];
       ogender = oriGender ? "男" : "女";
@@ -59,8 +72,11 @@ class _FormUserM extends State<FormUserM> {
   }
 
   _updateResume() async {
-    var apiUrl = "${baseUrl}alter_resume";
-    var result = await http.post(apiUrl, body: {
+    Options options =
+        Options(headers: {HttpHeaders.authorizationHeader: "Bearer $secToken"});
+    options.responseType = ResponseType.plain;
+    Response result;
+    var uri = Uri.http(serviceUri, "/alter_resume", {
       "user_id": "$_userid",
       "name": "$_name",
       "gender": "$_gender",
@@ -68,6 +84,8 @@ class _FormUserM extends State<FormUserM> {
       "experience": "$_experience",
       "education": "$_education"
     });
+    result = await Dio().get("$uri", options: options);
+
     if (result.statusCode == 200) {
       print("success");
     } else {
@@ -75,7 +93,6 @@ class _FormUserM extends State<FormUserM> {
     }
   }
 
-  TextEditingController _unameController = new TextEditingController();
   GlobalKey _formKey = new GlobalKey<FormState>();
 
   @override
@@ -94,16 +111,17 @@ class _FormUserM extends State<FormUserM> {
           child: ListView(
             children: <Widget>[
               BackupTitle(),
+              //namechanging
               TextFormField(
                 autofocus: true,
                 controller: _unameController,
                 decoration: InputDecoration(
-                    labelText: "$userName",
-                    labelStyle: TextStyle(color: Colors.deepOrange[600]),
-                    hintText: "修改姓名",
+                    labelText: "修改姓名",
+                    labelStyle: TextStyle(color: Colors.deepOrange[200]),
+                    hintText: "$userName",
                     icon: Icon(
                       Icons.person_outline,
-                      color: Colors.deepOrange[600],
+                      color: Colors.deepOrange[200],
                     )),
                 // 校验用户名
                 validator: (v) {
@@ -115,25 +133,83 @@ class _FormUserM extends State<FormUserM> {
                   });
                 },
               ),
-              //性别
-              Container(
-                child: SexM(),
+              //password confirmation
+              TextFormField(
+                controller: _pwdController,
+                decoration: InputDecoration(
+                    labelText: "密码",
+                    hintText: "用以验证身份",
+                    icon: Icon(Icons.lock)),
+                obscureText: true,
+                //校验密码
+                validator: (v) {
+                  return v.trim().length > 5 ? null : "密码不能少于6位";
+                },
+                onChanged: (value) {
+                  _confirm_password = value;
+                },
               ),
-              Text("$ogender"),
-              Container(
-                child: Birthdate(),
+              //gender changing
+              TextFormField(
+                controller: _pwdController,
+                decoration: InputDecoration(
+                    labelText: "性别", hintText: "男/女", icon: Icon(Icons.lock)),
+                obscureText: true,
+                //校验密码
+                validator: (v) {
+                  return v.trim().length != 1 ? null : "请正确填写性别";
+                },
+                onChanged: (value) {
+                  _gender = value;
+                },
               ),
-              Text("$oriBirth"),
-              Container(
-                child: EducationM(),
+              //birth changing
+              TextFormField(
+                controller: _birthController,
+                decoration: InputDecoration(
+                    labelText: "生日",
+                    hintText: "YYYY-MM-DD",
+                    icon: Icon(Icons.cake)),
+                obscureText: true,
+                validator: (v) {
+                  return v.trim().length != 10 ? null : "生日输入格式有误";
+                },
+                onChanged: (value) {
+                  _birth = value;
+                },
               ),
-              Text("$oriEducation"),
-              Container(
-                child: ExperienceM(),
-              ),
-              Text("$oriExperience"),
-              // 修改按钮
+              //education changing
+              TextFormField(
+                  controller: _educationController,
+                  decoration: InputDecoration(
+                      labelText: "学历",
+                      hintText: "高中/专科/本科/博士",
+                      icon: Icon(Icons.star_border)),
+                  obscureText: true,
+                  //校验
+                  // validator: (v) {
+                  //   return v.trim().contains() ? null : "请加上邮箱后缀";
+                  // },
+                  onChanged: (value) {
+                    _education = value;
+                  }),
+              //experience changing
+              TextFormField(
+                  controller: _experienceController,
+                  decoration: InputDecoration(
+                      labelText: "工作经验",
+                      hintText: "XX年/不足半年不计",
+                      icon: Icon(Icons.explore)),
+                  obscureText: true,
+                  //校验
+                  // validator: (v) {
+                  //   return v.trim().contains() ? null : "请加上邮箱后缀";
+                  // },
+                  onChanged: (value) {
+                    _experience = value;
+                  }),
 
+              // 修改按钮
               Padding(
                 padding: const EdgeInsets.only(top: 28.0),
                 child: Row(
@@ -151,10 +227,37 @@ class _FormUserM extends State<FormUserM> {
                           // 通过_formKey.currentState 获取FormState后，
                           // 调用validate()方法校验用户名密码是否合法，校验
                           // 通过后再提交数据。
-                          if ((_formKey.currentState as FormState).validate()) {
+                          if ((_formKey.currentState as FormState).validate() &&
+                              _confirm_password == userPassword) {
                             print(_birth is String);
                             _updateResume();
                             //验证通过提交数据
+                            // showDialog<Null>(
+                            //   context: context,
+                            //   barrierDismissible: true,
+                            //   builder: (BuildContext context) {
+                            //     return new AlertDialog(
+                            //       title: new Text('修改结果'),
+                            //       content: new SingleChildScrollView(
+                            //         child: new ListBody(
+                            //           children: <Widget>[
+                            //             new Text('您已经完成修改，请返回查看！'),
+                            //           ],
+                            //         ),
+                            //       ),
+                            //       actions: <Widget>[
+                            //         new FlatButton(
+                            //           child: new Text('返回'),
+                            //           onPressed: () {
+                            //             // runApp(FlMainpage());
+                            //           },
+                            //         ),
+                            //       ],
+                            //     );
+                            //   },
+                            // ).then((val) {
+                            //   print(val);
+                            // });
                           }
                         },
                       ),
@@ -211,8 +314,7 @@ class SexM extends StatefulWidget {
 
 class _SexM extends State<SexM> {
   int groupValuea = 1;
-  // int groupValueb = 0;
-  // String str = '';
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -225,33 +327,33 @@ class _SexM extends State<SexM> {
           '性别',
           style: TextStyle(color: Colors.deepOrange[600]),
         ),
-        SizedBox(
-          width: 50,
-        ),
-        Text('男'),
-        Radio(
-          activeColor: Colors.deepOrange[600],
-          value: 1,
-          groupValue: this.groupValuea,
-          onChanged: (v) {
-            setState(() {
-              this.groupValuea = v;
-              _gender = true;
-            });
-          },
-        ),
-        Text('女'),
-        Radio(
-          activeColor: Colors.deepOrange[600],
-          value: 2,
-          groupValue: this.groupValuea,
-          onChanged: (v) {
-            setState(() {
-              this.groupValuea = v;
-              _gender = false;
-            });
-          },
-        ),
+        // SizedBox(
+        //   width: 50,
+        // ),
+        // Text('男'),
+        // Radio(
+        //   activeColor: Colors.deepOrange[600],
+        //   value: 1,
+        //   groupValue: this.groupValuea,
+        //   onChanged: (v) {
+        //     setState(() {
+        //       this.groupValuea = v;
+        //       _gender = true;
+        //     });
+        //   },
+        // ),
+        // Text('女'),
+        // Radio(
+        //   activeColor: Colors.deepOrange[600],
+        //   value: 2,
+        //   groupValue: this.groupValuea,
+        //   onChanged: (v) {
+        //     setState(() {
+        //       this.groupValuea = v;
+        //       _gender = false;
+        //     });
+        //   },
+        // ),
       ],
     );
   }

@@ -1,4 +1,9 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:freelancer/sharedinfo/config.dart';
+import 'package:freelancer/sharedinfo/user_info.dart';
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -39,14 +44,16 @@ class _SDMyappshomeState extends State<SDMyappshome> {
   List<Widget> tarApplist = new List();
 
   _setApp(int rid, int uid) async {
-    var result;
-    var uri = Uri.http("10.0.2.2:8080", "/update_apply_info", {
+    Options options =
+        Options(headers: {HttpHeaders.authorizationHeader: "Bearer $secToken"});
+    options.responseType = ResponseType.plain;
+    Response result;
+    var uri = Uri.http(serviceUri, "/update_apply_info", {
       "rec_id": rid.toString(),
       "user_id": uid.toString(),
       "accepted": isAccepted.toString(),
     });
-
-    result = await http.get(uri);
+    result = await Dio().get("$uri", options: options);
 
     if (result.statusCode == 200) {
       print("success");
@@ -58,19 +65,18 @@ class _SDMyappshomeState extends State<SDMyappshome> {
 
   _getMyApps() async {
     List<Widget> list = new List();
-    var result;
+
     Map<String, String> para = {"rec_id": tmprecid.toString()};
-
-    var uri = Uri.http("10.0.2.2:8080", "/getMyApplicants", para);
-
-    result = await http.get(uri);
-    print(result);
-
-    Utf8Decoder decode = new Utf8Decoder();
+    Options options =
+        Options(headers: {HttpHeaders.authorizationHeader: "Bearer $secToken"});
+    options.responseType = ResponseType.plain;
+    Response result;
+    var uri = Uri.http(serviceUri, "/getMyApplicants", para);
+    result = await Dio().get("$uri", options: options);
 
     if (result.statusCode == 200) {
       // print(jsonDecode(decode.convert(result.bodyBytes)) is List);
-      List tmp = jsonDecode(decode.convert(result.bodyBytes));
+      List tmp = jsonDecode(result.data);
 
       for (int i = 0; i < tmp.length; i++) {
         var index = tmp[i];

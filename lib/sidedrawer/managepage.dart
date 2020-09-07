@@ -1,6 +1,10 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:freelancer/Homepage/mainpage.dart';
 import 'package:freelancer/sharedinfo/config.dart';
+import 'package:freelancer/sharedinfo/user_info.dart';
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -33,10 +37,12 @@ class Managebody extends StatefulWidget {
 class _ManagebodyState extends State<Managebody> {
   String taruser;
   _setUser() async {
-    var apiUrl = "${baseUrl}change_state";
-    var result = await http.post(apiUrl, body: {
-      "userid": taruser,
-    });
+    Options options =
+        Options(headers: {HttpHeaders.authorizationHeader: "Bearer $secToken"});
+    options.responseType = ResponseType.plain;
+    Response result;
+    var uri = Uri.http(serviceUri, "/change_state", {"userid": taruser});
+
     if (result.statusCode == 200) {
       print("success set role");
     } else {

@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:freelancer/Homepage/detail_job.dart';
 
@@ -81,14 +84,16 @@ class _FormTestRouteState extends State<FormTestRoute> {
   }
 
   _makeMyDecision(int rid, int uid, int iaflag) async {
-    var result;
-    var uri = Uri.http("10.0.2.2:8080", "/update_employ_info", {
+    Options options =
+        Options(headers: {HttpHeaders.authorizationHeader: "Bearer $secToken"});
+    options.responseType = ResponseType.plain;
+    Response result;
+    var uri = Uri.http(serviceUri, "/update_employ_info", {
       "rec_id": rid.toString(),
       "user_id": uid.toString(),
       "accepted": iaflag.toString()
     });
-
-    result = await http.get(uri);
+    result = await Dio().get("$uri", options: options);
 
     if (result.statusCode == 200) {
       print("success");
@@ -101,15 +106,17 @@ class _FormTestRouteState extends State<FormTestRoute> {
   _getMyApps() async {
     List<Widget> list = new List();
 
-    var apiUrl = "${baseUrl}getEmpbyId";
-    var result;
-
-    result = await http.post(apiUrl, body: {"userid": userID.toString()});
-    Utf8Decoder decode = new Utf8Decoder();
+    Options options =
+        Options(headers: {HttpHeaders.authorizationHeader: "Bearer $secToken"});
+    options.responseType = ResponseType.plain;
+    Response result;
+    var uri =
+        Uri.http(serviceUri, "/getEmpbyId", {"userid": userID.toString()});
+    result = await Dio().get("$uri", options: options);
 
     if (result.statusCode == 200) {
-      print(jsonDecode(decode.convert(result.bodyBytes)) is List);
-      List tmp = jsonDecode(decode.convert(result.bodyBytes));
+      print(jsonDecode(result.data) is List);
+      List tmp = jsonDecode(result.data);
 
       for (int i = 0; i < tmp.length; i++) {
         var index = tmp[i];

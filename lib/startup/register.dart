@@ -29,8 +29,11 @@ class _RegisterBodyState extends State<RegisterBody> {
   String _password;
   String _email;
   String _phone;
+  String _msg;
+
+  bool success = false;
   _sendReinfo() async {
-    var apiUrl = "${baseUrl}register?";
+    var apiUrl = "${serviceUrl}register?";
     var result = await http.post(apiUrl, body: {
       "username": "$_username",
       "password": "$_password",
@@ -38,7 +41,14 @@ class _RegisterBodyState extends State<RegisterBody> {
       "email": "$_email"
     });
     if (result.statusCode == 200) {
-      print(json.decode(result.body) is Map);
+      Map<String, dynamic> tmp = json.decode(result.body);
+      print(tmp["status"]);
+      print(tmp["message"]);
+      if (tmp["status"] == 0) {
+        success = true;
+        _msg = tmp["message"];
+        print(tmp["message"]);
+      }
     } else {
       print(result.statusCode);
     }
@@ -156,12 +166,71 @@ class _RegisterBodyState extends State<RegisterBody> {
                 ),
                 onPressed: () {
                   _sendReinfo();
-                  runApp(FlLogin());
+
+                  // showDialog<Null>(
+                  //   context: context,
+                  //   barrierDismissible: false,
+                  //   builder: (BuildContext context) {
+                  //     return new AlertDialog(
+                  //       title: new Text('注册结果'),
+                  //       content: new SingleChildScrollView(
+                  //         child: new ListBody(
+                  //           children: <Widget>[
+                  //             new Text('您已经完成注册，请返回登陆！'),
+                  //           ],
+                  //         ),
+                  //       ),
+                  //       actions: <Widget>[
+                  //         new FlatButton(
+                  //           child: new Text('返回登陆界面'),
+                  //           onPressed: () {
+                  //             runApp(FlLogin());
+                  //           },
+                  //         ),
+                  //       ],
+                  //     );
+                  //   },
+                  // ).then((val) {
+                  //   print(val);
+                  // });
                 },
               ),
             ),
+            // new MaterialButton(
+            //   color: Colors.blue,
+            //   child: new Text('点我'),
+            //   onPressed: () {
+            //     showDialog<Null>(
+            //       context: context,
+            //       barrierDismissible: false,
+            //       builder: (BuildContext context) {
+            //         return new AlertDialog(
+            //           title: new Text('标题'),
+            //           content: new SingleChildScrollView(
+            //             child: new ListBody(
+            //               children: <Widget>[
+            //                 new Text('内容 1'),
+            //                 new Text('内容 2'),
+            //               ],
+            //             ),
+            //           ),
+            //           actions: <Widget>[
+            //             new FlatButton(
+            //               child: new Text('确定'),
+            //               onPressed: () {
+            //                 Navigator.of(context).pop();
+            //               },
+            //             ),
+            //           ],
+            //         );
+            //       },
+            //     ).then((val) {
+            //       print(val);
+            //     });
+            //   },
+            // ),
             Padding(
-              padding: EdgeInsets.only(top: 50),
+              padding: EdgeInsets.only(top: 50, left: 130),
               child: Text(
                 "请仔细阅读《用户手册》和《隐私设置》",
                 style: TextStyle(
