@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:freelancer/Homepage/mainpage.dart';
 import 'package:freelancer/sharedinfo/config.dart';
@@ -37,8 +40,11 @@ class _CreatejobshomeState extends State<Createjobshome> {
   String _exp;
   String _edu;
   _sendReinfo() async {
-    var apiUrl = "${baseUrl}create_job";
-    var result = await http.post(apiUrl, body: {
+    Options options =
+        Options(headers: {HttpHeaders.authorizationHeader: "Bearer $secToken"});
+    options.responseType = ResponseType.plain;
+    Response result;
+    var uri = Uri.http(serviceUri, "/create_job", {
       "userid": _userid.toString(),
       "salary": _salary,
       "location": _location,
@@ -50,6 +56,8 @@ class _CreatejobshomeState extends State<Createjobshome> {
       "exp": _exp,
       "edu": _edu,
     });
+
+    result = await Dio().get("$uri", options: options);
     if (result.statusCode == 200) {
       print(" create recruit success! ");
     } else {

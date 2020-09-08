@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:freelancer/Homepage/mainpage.dart';
+import 'package:freelancer/sharedinfo/config.dart';
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -29,18 +31,12 @@ class _CreateapplicantsBodyState extends State<CreateapplicantsBody> {
   String _email;
   String _phone;
   _sendReinfo() async {
-    var apiUrl = "http://10.0.2.2:8080/register?";
-    var result = await http.post(apiUrl, body: {
-      "username": "$_username",
-      "password": "$_password",
-      "phone": "$_phone",
-      "email": "$_email"
-    });
-    if (result.statusCode == 200) {
-      print(json.decode(result.body) is Map);
-    } else {
-      print(result.statusCode);
-    }
+    // Dio dio = new Dio();
+    // dio.options.baseUrl = serviceUrl;
+    // dio.options.responseType = ResponseType.plain;
+
+    // Response result;
+    // result = await dio.post("/");
   }
 
   @override

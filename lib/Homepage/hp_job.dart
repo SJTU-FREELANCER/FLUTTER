@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:freelancer/sharedinfo/user_info.dart';
 import 'package:http/http.dart' as http;
 
@@ -34,15 +35,19 @@ class _JobsState extends State<Jobs> {
   List<Widget> joblist = new List();
   _getCards() async {
     List<Widget> list = new List();
-    var apiUrl = "${baseUrl}get_jobs";
-    var result;
 
-    result = await http.get(apiUrl);
+    Dio dio = new Dio();
+    dio.options.baseUrl = serviceUrl;
+    dio.options.responseType = ResponseType.plain;
 
-    Utf8Decoder decode = new Utf8Decoder();
+    Response result;
+    result = await dio.post("/get_jobs");
+
+    // Utf8Decoder decode = new Utf8Decoder();
+
     if (result.statusCode == 200) {
-      print(jsonDecode(decode.convert(result.bodyBytes)) is List);
-      List tmp = jsonDecode(decode.convert(result.bodyBytes));
+      List tmp = jsonDecode(result.data);
+      print("json type is: ${tmp.runtimeType}");
       _refreshi += 20;
       _refreshi = _refreshi % 1000;
 
@@ -56,7 +61,8 @@ class _JobsState extends State<Jobs> {
         var education = index["rec_Education"];
         var experience = index["rec_Experience"];
 
-        _recid = index["rex_ID"];
+        //18:07
+        var rrid = index["rec_ID"];
         list.add(
           Card(
             margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
@@ -87,7 +93,9 @@ class _JobsState extends State<Jobs> {
                           child: Text("申请",
                               style:
                                   TextStyle(fontSize: 12, color: Colors.white)),
-                          onPressed: _addApplyInfo,
+                          onPressed: () {
+                            _addApplyInfo(rrid);
+                          },
                         ),
                       ),
                     ],
@@ -178,18 +186,18 @@ class _JobsState extends State<Jobs> {
   _filteredCards() async {
     List<Widget> list = new List();
 
-    //var apiUrlf = "${baseUrl}filt_jobs";
-    var fresult;
+    Dio dio = new Dio();
+    dio.options.baseUrl = serviceUrl;
+    dio.options.responseType = ResponseType.plain;
 
-    var uri = Uri.http("10.0.2.2:8080", "/filt_jobs", para);
+    Response fresult;
+    fresult = await dio.post("/filt_jobs", data: para);
 
-    fresult = await http.get(uri);
+    // Utf8Decoder decode = new Utf8Decoder();
 
-    Utf8Decoder decode = new Utf8Decoder();
     if (fresult.statusCode == 200) {
-      print(jsonDecode(decode.convert(fresult.bodyBytes)) is List);
-      List tmp = jsonDecode(decode.convert(fresult.bodyBytes));
-
+      List tmp = jsonDecode(fresult.data);
+      print("json type is: ${tmp.runtimeType}");
       print(tmp.length);
 
       for (int i = 0; i < tmp.length; i++) {
@@ -201,7 +209,7 @@ class _JobsState extends State<Jobs> {
         var enrolled = index["rec_Enrolled"];
         var education = index["rec_Education"];
         var experience = index["rec_Experience"];
-        _recid = index["rec_ID"];
+        var rrid = index["rec_ID"];
 
         list.add(
           Card(
@@ -233,7 +241,7 @@ class _JobsState extends State<Jobs> {
                           child: Text("申请",
                               style:
                                   TextStyle(fontSize: 12, color: Colors.white)),
-                          onPressed: _addApplyInfo,
+                          onPressed: _addApplyInfo(rrid),
                         ),
                       ),
                     ],
@@ -321,15 +329,166 @@ class _JobsState extends State<Jobs> {
     }
   }
 
-  _addApplyInfo() async {
-    var apiUrl = "${baseUrl}get_jobs";
-    var result;
+  _getSearchResult() async {
+    List<Widget> list = new List();
 
-    result = await http.post(apiUrl,
-        body: {"user_id": userID.toString(), "rec_id": _recid.toString()});
+    Dio dio = new Dio();
+    dio.options.baseUrl = serviceUrl;
+    dio.options.responseType = ResponseType.plain;
+
+    Response fresult;
+    fresult = await dio.post("/filt_jobs", data: para);
+
+    // Utf8Decoder decode = new Utf8Decoder();
+
+    if (fresult.statusCode == 200) {
+      List tmp = jsonDecode(fresult.data);
+      print("json type is: ${tmp.runtimeType}");
+      print(tmp.length);
+
+      for (int i = 0; i < tmp.length; i++) {
+        var index = tmp[i];
+        var salary = index["rec_salary"];
+        var location = index["rec_Location"];
+        var title = index["rec_Title"];
+        var cate = index["rec_Cate"];
+        var enrolled = index["rec_Enrolled"];
+        var education = index["rec_Education"];
+        var experience = index["rec_Experience"];
+        var rrid = index["rec_ID"];
+
+        list.add(
+          Card(
+            margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 5.0),
+            elevation: 15.0,
+            child: Column(
+              children: [
+                ListTile(
+                  title: Text("$cate|$title"),
+                  subtitle: Text("$salary 元/月"),
+                  trailing: Column(
+                    children: [
+                      Container(
+                        width: 80,
+                        height: 15,
+                        child: Text(
+                          "$enrolled 人进入",
+                          style: TextStyle(fontSize: 12, color: Colors.grey),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Container(
+                        width: 80,
+                        height: 30,
+                        child: RaisedButton(
+                          color: Colors.lightGreen,
+                          child: Text("申请",
+                              style:
+                                  TextStyle(fontSize: 12, color: Colors.white)),
+                          onPressed: _addApplyInfo(rrid),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: 20,
+                        bottom: 3,
+                      ),
+                      child: Text(
+                        "$location",
+                        style:
+                            TextStyle(fontSize: 14, color: Colors.indigoAccent),
+                      ),
+                    ),
+                  ],
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 350),
+                  child: Container(
+                    width: 30,
+                    height: 30,
+                    child: IconButton(
+                      color: Colors.indigoAccent,
+                      icon: Icon(Icons.keyboard_arrow_right),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => new Jobdetail(
+                                reccate: index["rec_Cate"],
+                                rectitle: index["rec_Title"],
+                                recsalary: index["rec_salary"],
+                                recedu: index["rec_Education"],
+                                recexp: index["rec_Experience"],
+                                recdes: index["rec_Desc"],
+                              ),
+                            ));
+                      },
+                    ),
+                  ),
+                ),
+                Divider(
+                  height: 1.0,
+                  indent: 20.0,
+                  endIndent: 20,
+                  color: Colors.blueGrey,
+                ),
+                Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: 20,
+                        top: 3,
+                        bottom: 5,
+                      ),
+                      child: Text(
+                        "教育：$education",
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: 230),
+                      child: Text(
+                        "经验：$experience",
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+
+      setState(() {
+        joblist = list;
+      });
+    } else {
+      print(fresult.statusCode);
+    }
+  }
+
+  _addApplyInfo(int rid) async {
+    Options options =
+        Options(headers: {HttpHeaders.authorizationHeader: "Bearer $secToken"});
+    options.responseType = ResponseType.plain;
+    Response result;
+    var uri = Uri.http(serviceUri, "/add_apply_info",
+        {"user_id": userID.toString(), "rec_id": rid.toString()});
+    result = await Dio().get("$uri", options: options);
 
     if (result.statusCode == 200) {
+      print("$rid");
       print("success");
+    } else {
+      print(result.statusCode);
     }
   }
 
@@ -358,8 +517,11 @@ class _JobsState extends State<Jobs> {
               width: 350,
               child: TextField(
                 decoration: InputDecoration(
-                  labelText: "find some jobs",
-                  prefixIcon: Icon(Icons.search),
+                  labelText: "find some jobs by title",
+                  prefixIcon: IconButton(
+                    icon: Icon(Icons.search),
+                    // onPressed: _getSearchResult(),
+                  ),
                   // 未获得焦点下划线设为灰色
                   enabledBorder: UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey),
@@ -369,6 +531,9 @@ class _JobsState extends State<Jobs> {
                     borderSide: BorderSide(color: Colors.green[300]),
                   ),
                 ),
+                // onChanged: (value) {
+                //   para["title"] = value;
+                // },
               ),
             ),
           ],
@@ -421,7 +586,7 @@ class _JobsState extends State<Jobs> {
                 onChanged: (value) {
                   setState(() {
                     _flocation = value;
-                    if (_fcate != null) para["cate"] = _fcate;
+                    if (_fcate != null) para["location"] = _flocation;
                   });
                 },
               ),

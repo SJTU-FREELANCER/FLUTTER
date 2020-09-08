@@ -224,7 +224,7 @@ class MyDrawer extends StatelessWidget {
         },
       ),
     ];
-    if (userStatus == 2) {
+    if (userStatus == 1) {
       drawerlist.add(ListTile(
         leading: const Icon(
           Icons.gps_fixed,
@@ -232,7 +232,7 @@ class MyDrawer extends StatelessWidget {
         ),
         title: const Text('管理员工具'),
         onTap: () {
-          if (userStatus == 2) {
+          if (userStatus == 1) {
             runApp(Flmanage());
           } else {
             print("$userStatus");

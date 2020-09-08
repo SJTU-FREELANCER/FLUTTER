@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:freelancer/sharedinfo/config.dart';
@@ -31,31 +33,47 @@ class _LoginBodyState extends State<LoginBody> {
   String _username;
   String _password;
   bool _flag = false;
+
   _getValidation() async {
-    var apiUrl = "${serviceUrl}login?";
-    var result = await http.post(apiUrl,
-        body: {"username": "$_username", "password": "$_password"});
+    //get the validation and the token
+    Dio dio = new Dio();
+    dio.options.baseUrl = serviceUrl;
+    dio.options.responseType = ResponseType.plain;
 
-    var tapiUrl = Uri.http(
-        "ec2-3-17-140-221.us-east-2.compute.amazonaws.com:8080",
-        "/login",
-        {"username": _username, "password": _password.toString()});
-    print(tapiUrl);
-    var tresult = await http.get(tapiUrl);
+    Response result;
+    result = await dio
+        .post("/login", data: {"username": _username, "password": _password});
 
-    if (result.statusCode == 200 && tresult.statusCode == 200) {
-      Map tmp = json.decode(result.body);
-      Map ttmp = json.decode(result.body);
+    if (result.statusCode == 200) {
+      Map<String, dynamic> tmp = jsonDecode(result.data);
+      String loginmsg = tmp["msg"];
 
-      secToken = ttmp["token"];
-      print(tmp);
-      print(secToken);
-      userStatus = tmp["status"];
-      var user = tmp["user"];
-      userRole = user["role"];
+      if (loginmsg.contains("成功")) {
+        secToken = tmp["token"];
+        userRole = tmp["role"];
+        print(secToken);
+      } else {
+        print("wrong username/password!");
+      }
+    } else {
+      print(result.statusCode);
+    }
 
-      if ((userStatus == 2 || userStatus == 1) && userRole != 2) {
-        //_flag = true;
+    Options options =
+        Options(headers: {HttpHeaders.authorizationHeader: "Bearer $secToken"});
+    options.responseType = ResponseType.plain;
+    Response detailedRes;
+    var uri =
+        Uri.http(serviceUri, "/getUserbyUsername", {"username": _username});
+
+    detailedRes = await Dio().get("$uri", options: options);
+
+    if (detailedRes.statusCode == 200) {
+      Map<String, dynamic> user = json.decode(detailedRes.data);
+      userStatus = user["role"];
+
+      if (userStatus != 2) {
+        _flag = true;
         print("login success");
 
         userID = user["user_ID"];
@@ -64,21 +82,12 @@ class _LoginBodyState extends State<LoginBody> {
         userEmail = user["email"];
         userPhone = user["phone"];
         userPassword = user["password"];
-
-        print("$userID");
-        print("$userName");
-        print("$userRname");
       } else {
-        if (userRole == 2)
-          print(
-              "You are locked by some reason, please contact us: 033-3333-3333");
-        else {
-          print("wrong username/password");
-        }
+        print(
+            "You are temporarily locked by some reason please contact us to unlock!");
       }
     } else {
-      print(result.statusCode);
-      print(tresult.statusCode);
+      print(detailedRes.statusCode);
     }
   }
 
